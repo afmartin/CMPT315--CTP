@@ -1,85 +1,145 @@
 body {
-    background-color: #84cfe8;
-    font-family:      Georgia, "Times New Roman", Times, serif;
-    font-size:        small;
-    margin: 0;
+    background-image:  url("../images/background.jpg");
+    font-family:       Verdana, sans-serif;
+    line-height:       1.2em;
+    font-size:         small;
+    margin:            0;
 }
 
-header{
-    background-color: #ffffff;
-    margin:           10px 10px 10px 10px;
-    height:           143px;
+a:link, a:visited {
+    text-decoration:   none;
+    font-weight:       bolder;
+    color:             #666666;
+    text-shadow:       1px 1px rgba(0, 0, 0, 0.3);
+}
+
+a:hover {
+    color:             #000000;
+}
+
+h1 {
+    font-weight:       bolder;
+    font-size:         2em;
+    color:             #41A6AC;
+    text-transform:    uppercase;
+}
+
+h2 {
+    font-weight:       bold;
+    font-size:         1.6em;
+    color:             #21D3AB;
+}
+
+div#container {
+    width:             1024px;
+    margin-left:       auto;
+    margin-right:      auto;
+}
+
+#sticky {
+    background:        url("../images/sticky.png") no-repeat;
+    width:             79px;
+    height:            80px;
+    padding:           30px 30px 30px 30px;
+    margin-left:       auto;
+    text-align:        center;
+    font-size:         1.2em;
+}
+
+#sticky a:visited, #sticky a:link, #sticky a:hover, #sticky a:active {
+    text-decoration:   none;
+    font-weight:       bolder;
+    text-transform:    uppercase;
+    color:             #457AA6;
+    text-shadow:       1px 1px rgba(0, 0, 0, 0.5);
+}
+
+#sticky a:hover {
+    color:             #AAB9DE;
+}
+
+header {
+    background:        url("../images/logo.png") left no-repeat;
+    margin:            10px 10px 10px 10px;
+    height:            150px;
 }
 
 img {
-    display: block;
-    margin: 0 auto;
+    display:           block;
+    margin:            0 auto;
 }
 
 nav {
-    background-color: #efe5d0;
-    margin: 10px 10px 0 10px;
+    background-color:  #A06A29;
+    margin:            10px 10px 0 10px;
+    box-shadow:        4px 4px 2px rgba(0, 0, 0, 0.5);
 }
 
-nav ul{
-    margin: 0;
-    list-style-type: none;
-    padding: 5px 0 5px 0;
+nav ul {
+    margin:            0;
+    list-style-type:   none;
+    padding:           5px 0 5px 0;
 }
 
-nav ul li{
-    display: inline;
-    padding: 5px 10px 5px 10px;
+nav ul li {
+    display:           inline;
+    padding:           5px 10px 5px 10px;
 }
 
-nav ul li a:link, nav ul li a:visited{
-    color: #954b4b;
-    border-bottom: none;
-    font-weight: bold;
+nav ul li a:link, nav ul li a:visited {
+    color:             #ffffff;
+    border-bottom:     none;
+    text-transform:    uppercase;
+    font-weight:       bolder;
+    text-decoration:   none;
+    text-shadow:       2px 2px rgba(0, 0, 0, 0.5);
+}
+
+nav ul li a:hover {
+    text-shadow:       5px 5px rgba(0, 0, 0, 0.5);
 }
 
 nav ul li.selected{
-
-    background-color: #c8b99c;
+    background-color:  #3A3526;
 }
 
 div#tableContainer {
-    display:          table;
-    border-spacing:   10px;
-    width: 100%;
+    display:           table;
+    border-spacing:    10px;
+    width:             100%;
 
 }
 
 div#tableRow {
-
-    display:          table-row;
-
+    display:           table-row;
 }
 
 #documents{
-    display: table-cell;
-    background: #d8ecf2;
-    padding: 15px;
-    text-align: center;
-    vertical-align: top;
-    width: 25%;
+    background:        url("../images/tack.png") no-repeat top center #ffffff;
+    display:           table-cell;
+    padding:           15px;
+    text-align:        center;
+    vertical-align:    top;
+    width:             25%;
+    box-shadow:        4px 4px 2px rgba(0, 0, 0, 0.5);
 }
 
 #main{
-    display: table-cell;
-    background: #d8ecf2;
-    padding: 15px;
-    vertical-align: top;
-    text-align: center;
-
+    background:        url("../images/tack.png") no-repeat top center #ffffff;
+    display:           table-cell;
+    padding:           15px;
+    vertical-align:    top;
+    text-align:        center;
+    box-shadow:        4px 4px 2px rgba(0, 0, 0, 0.5);
 }
 
 footer {
-    background-color: #efe5d0;
-    color:            #954b4b;
-    text-align:       center;
-    padding:          15px;
-    margin:           0 10px 10px 10px;
-    font-size:        90%;
-    clear:            right;
+    background-color:  #A06A29;
+    color:             #ffffff;
+    text-align:        center;
+    padding:           15px;
+    margin:            0 10px 10px 10px;
+    font-size:         90%;
+    clear:             right;
+    box-shadow:        4px 4px 2px rgba(0, 0, 0, 0.5);
 }
