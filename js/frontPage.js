@@ -1,7 +1,12 @@
+//just display some content in the main area based on what is
+//selected in the side panel.
 function print_str(str) {
-    var v = document.getElementById("main").getElementsByTagName("p")[1];
-    v.innerHTML+= str;
+    if(document.getElementById("signUp"))
+        return;
+    var v = document.getElementById("main");
+
     var d = document.createElement("div");
+    d.innerHTML+=str;
     d.className="dropdown";
 
     var content = document.createElement("div");
@@ -23,3 +28,51 @@ function print_str(str) {
     d.appendChild(content);
     v.innerHTML+="<br><br>";
 }
+
+//change the main content area to allow a user to sign up
+function signUp(){
+    if(document.getElementById("signUp"))
+        return;
+    document.getElementById("main").innerHTML= "";
+
+    var su = document.createElement("div");
+    su.id = "signUp";
+    su.innerHTML = '<h1>User Creation</h1> <form>First name:<br> <input type="text" name="firstname"><br>' +
+        '<br>Last name:<br> <input type="text" name="lastname"><br><br>Email address:<br> '
+        + '<input type="text" name="email"><br><br>Password:<br> <input type="password" name="password"><br>'
+        + '<br>Reconfirm password:<br> <input type="password" name="rePassword"><br><br> </form> <button '
+        + 'type="button" onclick = "cancelSignUp()">Cancel</button> <button onclick = "addNewTeacher()" type="button">Submit</button>';
+    document.getElementById("main").appendChild(su);
+}
+
+//if the user cancels their sign up just reload the home page
+function cancelSignUp(){
+    window.location.href = 'frontPage.html';
+}
+
+//constructor for teacher object
+//will need to add additional properties..
+function Teacher(fname, lname, email, psswd){
+    this.firstName = fname;
+    this.lastName = lname;
+    this.email = email;
+    this.password =  psswd;
+}
+
+//at some point this could actually send the data to server..
+Teacher.prototype.send = function(){
+    alert("Send this info to server: \n" + JSON.stringify(this));
+}
+
+//just get the info from text, create a teacher and send the info
+function addNewTeacher(){
+    var newT = new Teacher(document.getElementById("signUp").getElementsByTagName("input")[0].value,
+        document.getElementById("signUp").getElementsByTagName("input")[1].value,
+        document.getElementById("signUp").getElementsByTagName("input")[2].value,
+        document.getElementById("signUp").getElementsByTagName("input")[3].value);
+    newT.send();
+}
+
+
+
+
