@@ -73,6 +73,82 @@ function addNewTeacher(){
     newT.send();
 }
 
+function myDocuments(){
+    if(document.getElementById("myDocuments"))
+        return;
+    document.getElementById("main").innerHTML= "";
 
+    var doc = document.createElement("div");
+    doc.id = "myDocuments";
+    doc.innerHTML ='<div id="docNav">'
+        + '<ul>'
+        + ' <li><a onclick = "viewHistory()" hrefs="#">History</a></li> '
+        + ' <li><a onclick = "uploadDocuments()" hrefs="#">Upload</a></li> '
+        + ' <li><a onclick = "downloadedDocuments()" hrefs="#">Downloaded</a></li> '
+        + ' </ul></div>';
+    document.getElementById("main").appendChild(doc);
+}
 
+function viewHistory(){
+    if(document.getElementById("viewHistory"))
+        return;
+    document.getElementById("main").innerHTML= "";
+
+    var doc = document.createElement("div");
+    doc.id = "viewHistory";
+    doc.innerHTML = '<div id="docNav">'
+        + ' <ul>'
+        + ' <li><a onclick = "viewHistory()" hrefs="#">History</a></li> '
+        + ' <li><a onclick = "uploadDocuments()" hrefs="#">Upload</a></li> '
+        + ' <li><a onclick = "downloadedDocuments()" hrefs="#">Downloaded</a></li> '
+        + ' </ul>'
+        + '</div><br>'
+        + '<p>documents go here</p>';
+    document.getElementById("main").appendChild(doc);
+}
+
+function uploadDocuments(){
+    if(document.getElementById("uploadDocuments"))
+        return;
+    document.getElementById("main").innerHTML= "";
+
+    var doc = document.createElement("div");
+    var serverDocumentFolder = "./documents/"
+
+    doc.id = "uploadDocuments";
+    doc.innerHTML = '<div id="docNav">'
+        + '<ul>'
+        + ' <li><a onclick = "viewHistory()" hrefs="#">History</a></li> '
+        + ' <li><a onclick = "uploadDocuments()" hrefs="#">Upload</a></li> '
+        + ' <li><a onclick = "downloadedDocuments()" hrefs="#">Downloaded</a></li> '
+        + ' </ul>'
+        + '</div><br>'
+        + '<form action="uploadDoc" method="POST"><br>'
+        + 'File Description:  '
+        + '<input type="text" name="fileDescription" id="fileSelectorInput"> <br>'
+        + '<p> <input type="file" name="file"></p>'
+        + '<input type="submit">'
+        + '</form>';
+    document.getElementById("main").appendChild(doc);
+
+}
+
+function downloadedDocuments(){
+    if(document.getElementById("uploadDocuments"))
+        return;
+    document.getElementById("main").innerHTML= "";
+
+    var doc = document.createElement("div");
+    doc.id = "uploadDocuments";
+    doc.innerHTML = '<div id="docNav">'
+        + '<ul>'
+        + ' <li><a onclick = "viewHistory()" hrefs="#">History</a></li> '
+        + ' <li><a onclick = "uploadDocuments()" hrefs="#">Upload</a></li> '
+        + ' <li><a onclick = "downloadedDocuments()" hrefs="#">Downloaded</a></li> '
+        + ' </ul>'
+        + '</div><br>'
+        + '<p>list of docs downloaded go here</p>'
+    document.getElementById("main").appendChild(doc);
+
+}
 

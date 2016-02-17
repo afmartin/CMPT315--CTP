@@ -164,3 +164,14 @@ footer {
 .dropdown:hover .dropdown-content {
     display:           block;
 }
+
+#docNav{
+    margin:            10px 10px 0 10px;
+    box-shadow:        4px 4px 4px rgba(0, 0, 0, 0.5);
+
+}
+
+#docNav ul li{
+    display:           inline;
+    padding:           5px 10px 5px 10px;
+}
