@@ -45,7 +45,6 @@ function signUp(){
         +'<button type="button" onclick = "goHome()">Cancel</button> '
         + '<input type="submit" value="Submit">'
         +'</form>'
-        /*+'<button onclick = "addNewTeacher()" type="button">Submit</button>';*/
     document.getElementById("main").appendChild(su);
 }
 
@@ -54,28 +53,6 @@ function goHome(){
     window.location.href = '/';
 }
 
-//constructor for teacher object
-//will need to add additional properties..
-function Teacher(fname, lname, email, psswd){
-    this.firstName = fname;
-    this.lastName = lname;
-    this.email = email;
-    this.password =  psswd;
-}
-
-//at some point this could actually send the data to server..
-Teacher.prototype.send = function(){
-    alert("Send this info to server: \n" + JSON.stringify(this));
-}
-
-//just get the info from text, create a teacher and send the info
-function addNewTeacher(){
-    var newT = new Teacher(document.getElementById("signUp").getElementsByTagName("input")[0].value,
-        document.getElementById("signUp").getElementsByTagName("input")[1].value,
-        document.getElementById("signUp").getElementsByTagName("input")[2].value,
-        document.getElementById("signUp").getElementsByTagName("input")[3].value);
-    newT.send();
-}
 
 function myDocuments(){
     if(document.getElementById("myDocuments"))
