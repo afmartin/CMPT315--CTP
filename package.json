@@ -1,0 +1,10 @@
+{
+  "name": "ctp",
+  "version": "0.0.1",
+  "description": "Canadian Teacher Portal",
+  "dependencies": {
+    "socket.io": "~1.4.5",
+    "mime": "~1.3.4"
+
+  }
+}
