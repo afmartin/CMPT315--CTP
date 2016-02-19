@@ -127,12 +127,12 @@ function uploadDocuments(){
         + ' <li><a onclick = "downloadedDocuments()" hrefs="#">Downloaded</a></li> '
         + ' </ul>'
         + '</div><br>'
-        + '<form action="uploadDoc" method="POST"><br>'
+        + '<form action="uploadDoc" method="POST" enctype="multipart/form-data" ><br>'
         + 'File Description:  '
         + '<input type="text" name="fileDescription"> <br>'
         + '<input type="radio" name="grade" value="k-2">K-2<br>'
         + '<input type="radio" name="grade" value="2-4">2-4<br>'
-        + '<p> <input type="file" name="file" id="fileSelectorInput"></p>'
+        + '<p> <input type="file" name="uploadedFile" id="fileSelectorInput"></p>'
         + '<input type="submit" value="Send">'
         + '</form>';
     document.getElementById("main").appendChild(doc);
@@ -155,6 +155,5 @@ function downloadedDocuments(){
         + '</div><br>'
         + '<p>list of docs downloaded go here</p>'
     document.getElementById("main").appendChild(doc);
-
 }
 

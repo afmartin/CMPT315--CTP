@@ -29,7 +29,7 @@ var server = http.createServer(function(req, res){
                 case'/uploadDoc':
 
                     work.parseReceivedData(req, function(d) {
-                        
+                        console.log(d);
                     });
                     break;
             }
