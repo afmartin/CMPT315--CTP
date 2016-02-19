@@ -37,17 +37,21 @@ function signUp(){
 
     var su = document.createElement("div");
     su.id = "signUp";
-    su.innerHTML = '<h1>User Creation</h1> <form>First name:<br> <input type="text" name="firstname"><br>' +
-        '<br>Last name:<br> <input type="text" name="lastname"><br><br>Email address:<br> '
+    su.innerHTML = '<h1>User Creation</h1> '
+        +'<form method="POST" action="SubmitUser">First name:<br> <input type="text" name="firstname"><br>'
+        + '<br>Last name:<br> <input type="text" name="lastname"><br><br>Email address:<br> '
         + '<input type="text" name="email"><br><br>Password:<br> <input type="password" name="password"><br>'
-        + '<br>Reconfirm password:<br> <input type="password" name="rePassword"><br><br> </form> <button '
-        + 'type="button" onclick = "cancelSignUp()">Cancel</button> <button onclick = "addNewTeacher()" type="button">Submit</button>';
+        + '<br>Reconfirm password:<br> <input type="password" name="rePassword"><br><br> '
+        +'<button type="button" onclick = "goHome()">Cancel</button> '
+        + '<input type="submit" value="Submit">'
+        +'</form>'
+        /*+'<button onclick = "addNewTeacher()" type="button">Submit</button>';*/
     document.getElementById("main").appendChild(su);
 }
 
 //if the user cancels their sign up just reload the home page
-function cancelSignUp(){
-    window.location.href = 'frontPage.html';
+function goHome(){
+    window.location.href = '/';
 }
 
 //constructor for teacher object
@@ -123,11 +127,13 @@ function uploadDocuments(){
         + ' <li><a onclick = "downloadedDocuments()" hrefs="#">Downloaded</a></li> '
         + ' </ul>'
         + '</div><br>'
-        + '<form action="uploadDoc" method="POST"><br>'
+        + '<form action="uploadDoc" method="POST" enctype="multipart/form-data" ><br>'
         + 'File Description:  '
-        + '<input type="text" name="fileDescription" id="fileSelectorInput"> <br>'
-        + '<p> <input type="file" name="file"></p>'
-        + '<input type="submit">'
+        + '<input type="text" name="fileDescription"> <br>'
+        + '<input type="radio" name="grade" value="k-2">K-2<br>'
+        + '<input type="radio" name="grade" value="2-4">2-4<br>'
+        + '<p> <input type="file" name="uploadedFile" id="fileSelectorInput"></p>'
+        + '<input type="submit" value="Send">'
         + '</form>';
     document.getElementById("main").appendChild(doc);
 
@@ -139,7 +145,7 @@ function downloadedDocuments(){
     document.getElementById("main").innerHTML= "";
 
     var doc = document.createElement("div");
-    doc.id = "uploadDocuments";
+    doc.id = "downloadDocuments";
     doc.innerHTML = '<div id="docNav">'
         + '<ul>'
         + ' <li><a onclick = "viewHistory()" hrefs="#">History</a></li> '
@@ -149,6 +155,5 @@ function downloadedDocuments(){
         + '</div><br>'
         + '<p>list of docs downloaded go here</p>'
     document.getElementById("main").appendChild(doc);
-
 }
 
