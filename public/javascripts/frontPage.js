@@ -97,6 +97,8 @@ function uploadDocuments(){
     var serverDocumentFolder = "./documents/"
 
     doc.id = "uploadDocuments";
+    /*ownerID will need to be set somehow..
+      could be set after user log in from server..*/
     doc.innerHTML = '<div id="docNav">'
         + '<ul>'
         + ' <li><a onclick = "viewHistory()" hrefs="#">History</a></li> '
@@ -106,9 +108,14 @@ function uploadDocuments(){
         + '</div><br>'
         + '<form action="uploadDoc" method="POST" enctype="multipart/form-data" ><br>'
         + 'File Description:  '
-        + '<input type="text" name="fileDescription"> <br>'
+        + '<input type="text" name="fileDescription">'
+        + '<p>GRADES</p>'
         + '<input type="radio" name="grade" value="k-2">K-2<br>'
-        + '<input type="radio" name="grade" value="2-4">2-4<br>'
+        + '<input type="radio" name="grade" value="2-4">2-4'
+        + '<p>PROVINCE</p>'
+        + '<input type="radio" name="prov" value="AB">AB<br>'
+        + '<input type="radio" name="prov" value="BC">BC<br>'
+        + '<input type="hidden" name ="ownerID" value="0"><br>'
         + '<p> <input type="file" name="uploadedFile" id="fileSelectorInput"></p>'
         + '<input type="submit" value="Send">'
         + '</form>';
