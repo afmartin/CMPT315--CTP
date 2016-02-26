@@ -175,3 +175,7 @@ footer {
     display:           inline;
     padding:           5px 10px 5px 10px;
 }
+
+#docNav a:hover{
+    cursor: pointer;
+}
