@@ -8,8 +8,8 @@ router.get('/', function(req, res) {
 	models.User.all( {
 		attributes: { exclude: ['password'] }
 	}).then(function(users) {
-		res.status(200);	
-		res.json(users);	
+		res.status(200);
+		res.json(users);
 	}).catch(function(error) {
 		res.status(500).end();
 	});;
@@ -26,14 +26,14 @@ router.get('/:id', function(req, res) {
 			res.json( { user: user });
 		}
 	}).catch(function(error) {
-		res.status(500).end();	
+		res.status(500).end();
 	});
 });
 
 /* POST New User Creation */
 router.post('/', function(req, res) {
 	var password = req.body.password;
-	if (password.length < 6 || password.length > 64) {
+	if (password == undefined || password.length < 6 || password.length > 64) {
 		res.status(400);
 		res.json({
 			error: 'Failed to create user',
@@ -49,7 +49,7 @@ router.post('/', function(req, res) {
 					email: req.body.email,
 					bio: req.body.bio
 				}).then(function() {
-					res.status(201);
+					res.status(201).end();
 				}).catch(function(error) {
 					res.status(400);
 					res.json({
