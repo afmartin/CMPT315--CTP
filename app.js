@@ -1,4 +1,5 @@
 var express = require('express');
+var morgan = require('morgan');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -10,6 +11,9 @@ var users = require('./routes/users');
 var upload = require('./routes/upload');
 
 var app = express();
+
+// logging
+app.use(morgan('combined'));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
