@@ -1,13 +1,15 @@
 var express = require('express');
+var path = require('path');
 var database = require('./../db_config.js');
+
 
 //gets a specific comment
 exports.retrieveSpecific = function(req, res) {
-    console.log("hi", req.params.cid );
+
     database.db.query("select *, COMMENTS.comment as comment, COMMENTS.owner as owner, COMMENTS.doc_id as docID from COMMENTS where comment_id= (?);", [req.params.cid],function(err, rows){
         if(err){
             res.json({
-                statusCode: 500,
+                statusCode: 400,
                 message: "failed to select comment"
             });
             throw err;
@@ -26,18 +28,18 @@ exports.retrieve = function(req, res) {
 
     var queryString = "select *, COMMENTS.comment as comment, COMMENTS.owner as owner, COMMENTS.doc_id as docID from COMMENTS ";
     if(req.headers.docID != null){
-        queryString += "' where doc_id= (?);', [req.headers.docID]";
+        queryString += " where doc_id= (?);, [req.headers.docID]";
     }
     else if(req.headers.userID){
-        queryString += "' where user_id= (?);', [req.headers.userID]";
+        queryString += " where user_id= (?);, [req.headers.userID]";
     }
     database.db.query(queryString, function (err, rows) {
         if (err) {
             res.json({
-                statusCode: 500,
+                statusCode: 400,
                 message: "failed to select comment"
             });
-            throw err;
+
         }
         res.json({
             "comment": rows[0].comment,
@@ -49,64 +51,98 @@ exports.retrieve = function(req, res) {
 };
 
 exports.create = function(req, res) {
-    var docID = Number(req.body.docID);
-    var comment = req.body.comment;
-    var userID = Number(req.body.userID);
+    var docID = req.body.docID;
+    var userID = req.body.userID;
+    var comment = req.body.comments;
+    var value = true;
+    var queryString = "insert into COMMENTS (doc_id, owner, comment) values (" + docID + ", " + userID + ", ? );"
+    console.log(req.body,queryString);
 
-
-
-
-    database.db.query("insert into COMMENTS (doc_id, owner, comment) values (? , ? , ? );", [docID],[userID],[comment],function(err,rows){
-        if (err) {
-            res.json({
-                statusCode: 500,
-                message: "failed to select comment"
-            });
-            throw err;
-        }
-        res.json({
-            message: "insertion successful",
-            statusCode: 200
+    if(docID == null || userID == null || comment == null) {
+        console.log("bye");
+        return res.json({
+            statusCode: 400,
+            message: "proper info not included"
         });
-    });
+    }
+    else {
+
+        docID = Number(docID);
+        userID = Number(userID);
+        console.log(docID, comment, userID);
+
+        database.db.query(queryString, [comment], function (err, rows) {
+            if (err) {
+                console.log(err);
+                return res.json({
+                    statusCode: 400,
+                    message: "failed to insert comment"
+                });
+            }
+            return res.json({
+                message: "insertion successful",
+                statusCode: 200
+            });
+        });
+    }
+
 
 
 };
 
 exports.update = function(req, res) {
-    var docID = Number(req.body.docID);
+    var docID = req.body.docID;
     var comment = req.body.comment;
-    var userID = Number(req.body.userID);
+    var userID = req.body.userID;
 
-    database.db.query("update COMMENTS set comment = ? where COMMENTS.doc_id =  " + docID + " and owner = " + userID +";", [comment],function(err,rows){
-        if (err) {
-            res.json({
-                statusCode: 500,
-                message: "failed to update comment",
-            });
-            throw err;
-        }
+    if(docID == null || comment == null || userID == null) {
+        console.log(docID, userID, comment);
         res.json({
-            message: "update successful",
-            statusCode: 200
+            statusCode: 400,
+            message: "proper info not included"
         });
-    });
+        return;
+    }
+    else {
+        docID = Number(docID);
+        userID = Number(userID);
 
+        database.db.query("update COMMENTS set comment = ? where COMMENTS.doc_id =  " + docID + " and owner = " + userID + ";", [comment], function (err, rows) {
+            if (err) {
+                res.json({
+                    statusCode: 400,
+                    message: "failed to update comment",
+                });
+            }
+            res.json({
+                message: "update successful",
+                statusCode: 200
+            });
+        });
+    }
 };
 
 exports.delete = function(req, res){
     var cID = Number(req.params.cid);
-
-    database.db.query("delete from COMMENTS where comment_id = " + cID + ";" , function(err, rows){
-        if (err) {
-            res.json({
-                statusCode: 500,
-                message: "failed to delete comment",
-             });
-        }
+    if(cID == null){
         res.json({
-            message: "update successful",
-            statusCode: 200
+            statusCode: 400,
+            message: "proper info not included"
         });
-    });
+        return;
+    }
+    else {
+        database.db.query("delete from COMMENTS where comment_id = " + cID + ";", function (err, rows) {
+            if (err) {
+                res.json({
+                    statusCode: 500,
+                    message: "failed to delete comment",
+                });
+            }
+            res.json({
+                message: "update successful",
+                statusCode: 200
+            });
+        });
+    }
 };

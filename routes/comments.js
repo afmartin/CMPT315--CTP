@@ -12,7 +12,7 @@ app.get('/', function(req, res) {
 
 
 app.post('/', function(req, res) {
-    comments.create( req, res);
+    comments.create(req, res);
 });
 
 app.put('/:cid', function(req, res) {

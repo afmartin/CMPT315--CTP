@@ -24,12 +24,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+app.use('/api/v1/comments', comments);
+app.use('/api/v1/ratings', ratings);
 app.use('/', routes);
 app.use('/users', users);
 app.use('/comments', comments);
-app.use('/documents', documents);
+//app.use('/documents', documents);
 app.use('/ratings', ratings);
-app.use('/documents/:docID/rating',rating);
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -41,6 +46,7 @@ app.use(function(req, res, next) {
 // error handlers
 // development error handler
 // will print stacktrace
+
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
