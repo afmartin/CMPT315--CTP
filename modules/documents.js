@@ -35,7 +35,7 @@ exports.deleteDoc = function(req, res){
 };
 
 exports.getPreviewInfo = function(req, res){
-    var str = "SELECT DOC_ID, title, grade, province, subject, preview, avg_rating "
+    var str = "SELECT DOC_ID, title, grade, province, subject, preview, avg_rating, owner_ID "
         + "from DOCUMENTS as d "
         + "where true ";
     var arr = [];
@@ -54,9 +54,12 @@ exports.getPreviewInfo = function(req, res){
         }
 
         for(var i = 0; i < rows.length; i++){
-            if(rows[i]["PREVIEW"] === null)break;
-            rows[i].previewPath = "http://localhost:3000/tmp/downloads/" + rows[i].DOC_ID + "_preview" + rows[i].preview;
-
+            if(rows[i]["preview"] == null) {
+                break;
+            }
+            else {
+                rows[i].previewPath = "http://localhost:3000/tmp/downloads/" + rows[i].DOC_ID + "_preview" + rows[i].preview;
+            }
         }
         res.json({
             statusCode: 200,
@@ -108,6 +111,7 @@ exports.uploadDoc = function(req, res){
             return res.json({statusCode:500, message:"No file found"});
         }
         var ownerID = req.body["ownerID"];
+        console.log(ownerID);
         var desc = req.body["fileDescription"];
 
         var title = req.files[0]["originalname"];
@@ -138,7 +142,7 @@ exports.uploadDoc = function(req, res){
                     return res.json({
                         statusCode: 201,
                         message: "Document upload successful",
-                        key: rows[0]["newID"],
+                        DOC_ID: rows[0]["newID"],
                         preview: null
                     });
                 });
@@ -240,7 +244,7 @@ function getRes(r){
 function verifyPrivilege(req, res, callback){
     //check if logged in user ID is equal to the Docs owner ID to allow certain access.
     //set the user id to 0 (root) for testing
-    var currentUserID = 0;
+    var currentUserID = 1;
 
     var docID = req.params.id;
 
