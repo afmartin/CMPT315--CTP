@@ -1,5 +1,6 @@
 var express = require('express')
 var database = require('./../db_config.js');
+var bcrypt = require('bcryptjs');
 
 function findById(id, callback) {
 	var query = "SELECT U_ID as id, email, first_name as firstName, last_name as lastName, bio" +
@@ -75,7 +76,6 @@ function create(user, success, failure) {
 
 function update(user, id, success, failure) {
 	var query = "UPDATE USERS SET EMAIL = ?, PASSWORD = ?, FIRST_NAME = ?, LAST_NAME = ?, BIO = ? WHERE U_ID = ?";
-	console.log(database.db.format(query, [user.email, user.password, user.firstName, user.lastName, user.bio, id]));
 	database.db.query(query, [user.email, user.password, user.firstName, user.lastName, user.bio, id], function(err) {
 		if (err) {
 			console.log(err);
@@ -117,9 +117,9 @@ module.exports.create = function(user, res) {
 			return;
 		}
 
-		findWhere([{field: 'email', values: [user.email]}], function(user_same_email) {
-			if (user_same_email == undefined) {
-				// TODO: Hash password.
+		findWhere([{field: 'email', values: [user.email]}], function(users_same_email) {
+			if (users_same_email.length == 0) {
+				user.password = bcrypt.hashSync(user.password, 10);
 				create(user, function() {
 					res.json({
 						statusCode: 200,
@@ -198,6 +198,7 @@ module.exports.update = function(id, user_changes, res) {
 						errors: errors
 					});
 				} else {
+					user_changes.password = bcrypt.hashSync(user_changes.password, 10);
 					update(user_changes, Number(id), function() {
 						res.json({
 							statusCode: 200,
