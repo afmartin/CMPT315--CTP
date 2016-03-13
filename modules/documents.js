@@ -35,7 +35,7 @@ exports.deleteDoc = function(req, res){
 };
 
 exports.getPreviewInfo = function(req, res){
-    var str = "SELECT DOC_ID, title, grade, province, subject, preview "
+    var str = "SELECT DOC_ID, title, grade, province, subject, preview, avg_rating "
         + "from DOCUMENTS as d "
         + "where true ";
     var arr = [];
@@ -60,12 +60,13 @@ exports.getPreviewInfo = function(req, res){
         }
         res.json({
             statusCode: 200,
+            message: "Preview info",
             info: getLessInfo(rows)
         });
     });
 };
 
-exports.getSpecificInfo = function(req, res){
+exports.getDetailedInfo = function(req, res){
     //check validation here (just make sure they are logged in)
     database.db.query("select * from DOCUMENTS where DOC_ID=?", [req.params.id], function(err, rows) {
         console.log(rows.length);
@@ -100,8 +101,11 @@ exports.getSpecificInfo = function(req, res){
 exports.uploadDoc = function(req, res){
     //check validation here (just make sure they are logged in)
     upload(req, res, function(err){
-        if(err || req.files[0] === undefined){
+        if(err){
             return res.json(getRes("ul"));
+        }
+        if(req.files[0] === undefined){
+            return res.json({statusCode:500, message:"No file found"});
         }
         var ownerID = req.body["ownerID"];
         var desc = req.body["fileDescription"];
@@ -115,7 +119,7 @@ exports.uploadDoc = function(req, res){
             ext = '.txt';
         }
         var grade = req.body.grade;
-        var prov = req.body["prov"];
+        var prov = req.body.province;
         var subj = req.body.subject;
 
         database.db.query("insert into DOCUMENTS values(null, '" + ownerID + "','" + ext + "','" + desc + "','" + title + "', null, null, '" +
@@ -143,7 +147,7 @@ exports.uploadDoc = function(req, res){
     });
 };
 
-exports.uploadPreview = function(req, res) {
+exports.uploadPreviewImage = function(req, res) {
     verifyPrivilege(req, res, function(req, res){
         upload(req, res, function (err) {
             if (err) {
@@ -188,11 +192,12 @@ exports.updateDoc = function(req, res){
         var arr = [];
         for(var q in req.query){
             if(req.query.hasOwnProperty(q)) {
-                if (q.toUpperCase() === 'EXTENSIONS' || q.toUpperCase() === "PREVIEW"
-                    || q.toUpperCase() === 'OWNER_ID' || q.toUpperCase() === 'DOC_ID') {
+                p = q.toUpperCase();
+                if (p === 'EXTENSIONS' || p === "PREVIEW"
+                    || p === 'OWNER_ID' || p === 'DOC_ID'){
                     return res.json({
                         statusCode: 500,
-                        message: "You can not update the field: " + q
+                        message: "You can not update the field: " + p
                     });
                 }
                 str += q + "=?,";
@@ -222,7 +227,6 @@ exports.notSupported = function(req, res){
 
 //non export functions
 function getRes(r){
-
     var jsonResponses = {
         db: {statusCode: 500, message: 'DB failure'},
         nr: {statusCode: 404, message: 'No Results found'},
@@ -254,7 +258,7 @@ function verifyPrivilege(req, res, callback){
             })
         }
         else{
-            callback(req, res);
+            return callback(req, res);
         }
     });
 }
@@ -287,7 +291,7 @@ function getLessInfo(rows){
             title: row.title,
             grade: row.grade,
             province: row.province,
-            avgRating: row["avg_rating"],
+            avgRating: row.avg_rating,
             subject: row.subject,
             previewPath: row.previewPath
         };
