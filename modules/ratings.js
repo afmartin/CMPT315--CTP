@@ -3,8 +3,8 @@ var database = require('./../db_config.js');
 
 
 exports.retrieveSpecific = function(req, res) {
-    var userID = req.body.userID;
-    var docID = req.body.id;
+    var userID = req.header.userID;
+    var docID = req.header.id;
 
     database.db.query("select rating as newrating from RATING where user_reviewed_by= " + userID +" and doc_id="+docID + ";",function(err, rows){
         if(err){
