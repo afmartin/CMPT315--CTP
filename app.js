@@ -9,6 +9,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var ratings = require('./routes/ratings');
 var comments = require('./routes/comments');
+var documents = require('./routes/documents');
 var app = express();
 
 // view engine setup
@@ -24,13 +25,16 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.use('/api/v1/comments', comments);
-app.use('/api/v1/ratings', ratings);
-app.use('/', routes);
-app.use('/users', users);
-app.use('/comments', comments);
-app.use('/ratings', ratings);
 
+//Add a phony directory for client downloads. Can adjust this path in the
+//future
+app.use('/', routes);
+app.use('/tmp/downloads', express.static(path.join(__dirname, 'docs')));
+app.use('/v1/api/', routes);
+app.use('/v1/api/users', users);
+app.use('/v1/api/comments', comments);
+app.use('/v1/api/ratings', ratings);
+app.use('/v1/api/documents', documents);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -46,10 +50,7 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
+    res.json({statusCode: (err.status || 500), message: err.message})
   });
 }
 
