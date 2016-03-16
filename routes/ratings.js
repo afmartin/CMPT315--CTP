@@ -10,7 +10,7 @@ app.post('/', function(req, res) {
     ratings.create( req, res);
 });
 
-app.put('/:cid', function(req, res) {
+app.put('/', function(req, res) {
     ratings.update(req, res);
 });
 

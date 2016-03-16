@@ -8,12 +8,14 @@ exports.retrieveSpecific = function(req, res) {
 
     database.db.query("select *, COMMENTS.comment as comment, COMMENTS.owner as owner, COMMENTS.doc_id as docID from COMMENTS where comment_id= (?);", [req.params.cID],function(err, rows){
         if(err){
+            res.statusCode = 400;
             res.json({
                 statusCode: 400,
                 message: "failed to select comment"
             });
             throw err;
         }
+        res.statusCode = 200;
         res.json({
             "comment": rows[0].comment,
             "owner": rows[0].owner,
@@ -33,11 +35,13 @@ exports.retrieve = function(req, res) {
         if (req.headers.docid != null) {
             database.db.query("select *, COMMENTS.comment as comment, COMMENTS.owner as owner, COMMENTS.doc_id as docID from COMMENTS  where doc_id= (?);",[req.headers.docid], function (err, rows) {
                 if (err) {
+                    res.statusCode = 400;
                     res.json({
                         statusCode: 400,
                         message: "failed to select comment"
                     });
                 }
+                res.statusCode = 200;
                 res.json({
                     "comments": rows,
                     statusCode: 200
@@ -47,12 +51,14 @@ exports.retrieve = function(req, res) {
         else if (req.headers.userid != null) {
             database.db.query("select *, COMMENTS.comment as comment, COMMENTS.owner as owner, COMMENTS.doc_id as docID from COMMENTS  where owner= (?);",[req.headers.userid], function (err, rows) {
                 if (err) {
+                    res.statusCode = 400;
                     res.json({
                         statusCode: 400,
                         message: "failed to select comment"
                     });
 
                 }
+                res.statusCode = 200;
                 res.json({
                     comments: rows,
                     statusCode: 200
@@ -74,8 +80,8 @@ exports.create = function(req, res) {
         console.log(req.body, queryString);
 
         if (docID == null || userID == null || comment == null) {
-            console.log("bye");
-            return res.json({
+            res.statusCode = 400;
+            res.json({
                 statusCode: 400,
                 message: "proper info not included"
             });
@@ -89,12 +95,14 @@ exports.create = function(req, res) {
             database.db.query(queryString, [comment], function (err, rows) {
                 if (err) {
                     console.log(err);
+                    res.statusCode = 400;
                     return res.json({
                         statusCode: 400,
                         message: "failed to insert comment"
                     });
                 }
-                return res.json({
+                res.statusCode = 200;
+                res.json({
                     message: "insertion successful",
                     statusCode: 200
                 });
@@ -114,6 +122,7 @@ exports.update = function(req, res) {
 
         if (docID == null || comment == null || userID == null) {
             console.log(docID, userID, comment);
+            res.statusCode = 400;
             res.json({
                 statusCode: 400,
                 message: "proper info not included"
@@ -125,11 +134,13 @@ exports.update = function(req, res) {
 
             database.db.query("update COMMENTS set comment = ? where COMMENTS.comment_id= " + cID + ";", [comment], function (err, rows) {
                 if (err) {
+                    res.statusCdoe= 400;
                     res.json({
                         statusCode: 400,
                         message: "failed to update comment",
                     });
                 }
+                res.statusCode = 200;
                 res.json({
                     message: "update successful",
                     statusCode: 200
@@ -143,6 +154,7 @@ exports.delete = function(req, res){
     verify(req, res, function(req, res) {
         var cID = Number(req.params.cid);
         if (cID == null) {
+            res.statusCode = 400;
             res.json({
                 statusCode: 400,
                 message: "proper info not included"
@@ -151,11 +163,13 @@ exports.delete = function(req, res){
         else {
             database.db.query("delete from COMMENTS where comment_id = " + cID + ";", function (err, rows) {
                 if (err) {
+                    res.statusCode = 500;
                     res.json({
                         statusCode: 500,
                         message: "failed to delete comment",
                     });
                 }
+                res.statusCode = 200;
                 res.json({
                     message: "update successful",
                     statusCode: 200
