@@ -30,15 +30,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 //future
 app.use('/', routes);
 app.use('/tmp/downloads', express.static(path.join(__dirname, 'docs')));
-app.use('/v1/api/', routes);
-app.use('/v1/api/users', users);
-app.use('/v1/api/comments', comments);
-app.use('/v1/api/ratings', ratings);
-app.use('/v1/api/documents', documents);
 
-app.use('/v1/api/documents/:docID/ratings', ratings);
-app.use('/v1/api/documents/:docID/comments', comments);
-app.use('/v1/api/users/:userID/comments', comments);
+
+app.use('/api/v1/', routes);
+app.use('/api/v1/users', users);
+app.use('/api/v1/comments', comments);
+app.use('/api/v1/ratings', ratings);
+app.use('/api/v1/documents', documents);
+
+app.use('/api/v1/documents/:docID/comments', comments);
+app.use('/api/v1/users/:userID/comments', comments);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
