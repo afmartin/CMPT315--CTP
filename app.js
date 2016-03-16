@@ -24,9 +24,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+
 //Add a phony directory for client downloads. Can adjust this path in the
 //future
+app.use('/', routes);
 app.use('/tmp/downloads', express.static(path.join(__dirname, 'docs')));
+
 
 app.use('/api/v1/', routes);
 app.use('/api/v1/users', users);
@@ -34,6 +38,8 @@ app.use('/api/v1/comments', comments);
 app.use('/api/v1/ratings', ratings);
 app.use('/api/v1/documents', documents);
 
+app.use('/api/v1/documents/:docID/comments', comments);
+app.use('/api/v1/users/:userID/comments', comments);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
@@ -44,6 +50,7 @@ app.use(function(req, res, next) {
 // error handlers
 // development error handler
 // will print stacktrace
+
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
