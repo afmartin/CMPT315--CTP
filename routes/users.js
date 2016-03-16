@@ -13,7 +13,7 @@ router.get('/', function(req, res) {
         var values = req.query[key].split(",");
         conditions.push({
             field: key,
-            values: values 
+            values: values
         });
     }
     users.retrieve(conditions, res);
@@ -25,6 +25,10 @@ router.post('/', function(req, res) {
 
 router.put('/:id', function (req, res) {
     users.update(req.params.id, req.body, res);
+});
+
+router.delete('/:id', function(req, res) {
+    users.delete(req.params.id, res);
 });
 
 module.exports = router;
