@@ -6,7 +6,7 @@ var database = require('./../db_config.js');
 //gets a specific comment
 exports.retrieveSpecific = function(req, res) {
 
-    database.db.query("select *, COMMENTS.comment as comment, COMMENTS.owner as owner, COMMENTS.doc_id as docID from COMMENTS where comment_id= (?);", [req.params.cid],function(err, rows){
+    database.db.query("select *, COMMENTS.comment as comment, COMMENTS.owner as owner, COMMENTS.doc_id as docID from COMMENTS where comment_id= (?);", [req.params.cID],function(err, rows){
         if(err){
             res.json({
                 statusCode: 400,
@@ -23,35 +23,48 @@ exports.retrieveSpecific = function(req, res) {
     });
 };
 
-//gets all comments for a specific doc
+//gets all comments for a specific doc or user
 exports.retrieve = function(req, res) {
 
-    var queryString = "select *, COMMENTS.comment as comment, COMMENTS.owner as owner, COMMENTS.doc_id as docID from COMMENTS ";
-    if(req.headers.docID != null){
-        queryString += " where doc_id= (?);, [req.headers.docID]";
-    }
-    else if(req.headers.userID){
-        queryString += " where user_id= (?);, [req.headers.userID]";
-    }
-    database.db.query(queryString, function (err, rows) {
-        if (err) {
-            res.json({
-                statusCode: 400,
-                message: "failed to select comment"
+    verify(req, res, function(req, res) {
+        var comment;
+        var owner;
+        var doc;
+        if (req.headers.docid != null) {
+            database.db.query("select *, COMMENTS.comment as comment, COMMENTS.owner as owner, COMMENTS.doc_id as docID from COMMENTS  where doc_id= (?);",[req.headers.docid], function (err, rows) {
+                if (err) {
+                    res.json({
+                        statusCode: 400,
+                        message: "failed to select comment"
+                    });
+                }
+                res.json({
+                    "comments": rows,
+                    statusCode: 200
+                });
             });
-
         }
-        res.json({
-            "comment": rows[0].comment,
-            "owner": rows[0].owner,
-            "document": rows[0].docID,
-            statusCode: 200
-        });
+        else if (req.headers.userid != null) {
+            database.db.query("select *, COMMENTS.comment as comment, COMMENTS.owner as owner, COMMENTS.doc_id as docID from COMMENTS  where owner= (?);",[req.headers.userid], function (err, rows) {
+                if (err) {
+                    res.json({
+                        statusCode: 400,
+                        message: "failed to select comment"
+                    });
+
+                }
+                res.json({
+                    comments: rows,
+                    statusCode: 200
+                });
+
+            });
+        }
     });
 };
 
 exports.create = function(req, res) {
-    var docID = req.body.docID;
+    var docID = req.params.docID;
     var userID = req.body.userID;
     var comment = req.body.comments;
     var value = true;
@@ -94,6 +107,7 @@ exports.update = function(req, res) {
     var docID = req.body.docID;
     var comment = req.body.comment;
     var userID = req.body.userID;
+    var cID = req.params.cID;
 
     if(docID == null || comment == null || userID == null) {
         console.log(docID, userID, comment);
@@ -101,13 +115,12 @@ exports.update = function(req, res) {
             statusCode: 400,
             message: "proper info not included"
         });
-        return;
     }
-    else {
+    else{
         docID = Number(docID);
         userID = Number(userID);
 
-        database.db.query("update COMMENTS set comment = ? where COMMENTS.doc_id =  " + docID + " and owner = " + userID + ";", [comment], function (err, rows) {
+        database.db.query("update COMMENTS set comment = ? where COMMENTS.comment_id= " + cID + ";", [comment], function (err, rows) {
             if (err) {
                 res.json({
                     statusCode: 400,
@@ -146,3 +159,7 @@ exports.delete = function(req, res){
         });
     }
 };
+
+function verify(req, res, callback){
+    return callback(req,res)
+}

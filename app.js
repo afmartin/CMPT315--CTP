@@ -36,6 +36,9 @@ app.use('/v1/api/comments', comments);
 app.use('/v1/api/ratings', ratings);
 app.use('/v1/api/documents', documents);
 
+app.use('/v1/api/documents/:docID/ratings', ratings);
+app.use('/v1/api/documents/:docID/comments', comments);
+app.use('/v1/api/users/:userID/comments', comments);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

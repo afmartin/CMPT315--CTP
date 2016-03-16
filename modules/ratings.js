@@ -25,7 +25,7 @@ exports.retrieveSpecific = function(req, res) {
 //post new rating and updates rating
 exports.create = function(req, res) {
     var newrating = req.body.rating;
-    var docID = req.body.docID;
+    var docID = req.params.docID;
     var userID = req.body.userID;
     var ownerID = req.body.ownerID;
     var rating;
@@ -41,7 +41,12 @@ exports.create = function(req, res) {
     }
     else {
         database.db.query("insert into RATING values (" + userID + ", " + ownerID + " ," + newrating + "," + docID + ");", function (err, rows) {
-            if (err)throw err;
+            if (err){
+                return res.json({
+                    statusCode: 500,
+                    message: err
+                });
+            }
         });
         get_Rating(docID, rating, res);
     }
