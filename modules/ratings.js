@@ -1,22 +1,21 @@
 var express = require('express');
 var database = require('./../db_config.js');
 
-
 exports.retrieveSpecific = function(req, res) {
     var userID = req.header.userID;
     var docID = req.header.id;
 
     database.db.query("select rating as newrating from RATING where user_reviewed_by= " + userID +" and doc_id="+docID + ";",function(err, rows){
         if(err){
+            res.statusCode = 500;
             res.json({
-                statusCode: 400,
+                statusCode: 500,
                 message: "proper info not included"
             });
-            return;
         }
         else {
-            console.log(rows[0].newrating);
-            res.status(200).json({"rating": newrating});
+            res.statusCode= 200;
+            res.json({"rating": newrating});
         }
     });
 
@@ -25,30 +24,31 @@ exports.retrieveSpecific = function(req, res) {
 //post new rating and updates rating
 exports.create = function(req, res) {
     var newrating = req.body.rating;
-    var docID = req.params.docID;
+    var docID = req.body.docID;
     var userID = req.body.userID;
     var ownerID = req.body.ownerID;
     var rating;
-    console.log(req.body);
 
     if(docID == null || newrating == null || userID == null || ownerID == null) {
-        console.log(docID, userID, newrating, ownerID);
+        res.statusCode = 400;
         res.json({
             statusCode: 400,
             message: "proper info not included"
         });
-        return;
     }
     else {
-        database.db.query("insert into RATING values (" + userID + ", " + ownerID + " ," + newrating + "," + docID + ");", function (err, rows) {
+        console.log(docID, newrating ,userID ,ownerID );
+        database.db.query("insert into RATING (user_reviewed_by, owner, rating, doc_id) values (" + userID + ", " + ownerID + " ," + newrating + "," + docID + ");", function (err, rows) {
             if (err){
-                return res.json({
+                res.statusCode = 500;
+                res.json({
                     statusCode: 500,
-                    message: err
+                    message: "insert failed"
                 });
             }
+            getRating(docID, newrating, res);
         });
-        get_Rating(docID, rating, res);
+
     }
 };
 
@@ -58,31 +58,40 @@ exports.update = function(req, res) {
     var newrating = Number(req.body.rating);
     var userID = Number(req.body.userID);
     var rating;
-    console.log(req.body, newrating, userID, docID);
 
     if(docID == null || newrating == null || userID == null) {
-        console.log(docID, userID, newrating);
+        res.statusCode = 400;
         res.json({
             statusCode: 400,
             message: "proper info not included"
         });
-        return;
     }
     else {
         database.db.query("update RATING set rating = " + newrating + " where user_reviewed_by = " + userID + " and doc_id = " + docID + " ;", function (err, rows) {
-            if (err)throw err;
+            if (err){
+                res.statusCode = 500;
+                res.json({
+                    statusCode: 500,
+                    message: "update failed"
+                });
+            }
 
         });
-        getRating(docID, rating, res);
+        getRating(docID, newrating, res);
     }
 };
 
 //updates avg doc rating in docs table
 function updateDocRating(docID, rating, res){
-
-    console.log("rate this", rating);
-    database.db.query("update DOCUMENTS set avg_rating = " + rating + ";",function(err, rows){
-        if(err)throw err;
+    database.db.query("update DOCUMENTS set avg_rating = " + rating + " where doc_id =" + docID + " ;",function(err, rows){
+        if(err){
+            res.statusCode = 500;
+            res.json({
+                statusCode: 500,
+                message: "update failed"
+            });
+        }
+        res.statusCode = 200;
         res.json({
             statusCode: 200,
             rating: rating
@@ -93,12 +102,15 @@ function updateDocRating(docID, rating, res){
 
 //gets avg doc rating for a specific doc
 function getRating(docID, rating,res){
-
-    console.log("doc",docID);
     database.db.query("select AVG(rating) as avg from RATING where doc_id = " + docID + ";", function(err, rows) {
-        if (err)throw err;
+        if (err){
+            res.statusCode = 500;
+            res.json({
+                statusCode: 500,
+                message: "get average rating failed"
+            });
+        }
         rating = rows[0].avg;
-
         updateDocRating(docID, rating, res);
 
     });
