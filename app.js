@@ -30,16 +30,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 //future
 app.use('/', routes);
 app.use('/tmp/downloads', express.static(path.join(__dirname, 'docs')));
-
-
 app.use('/api/v1/', routes);
 app.use('/api/v1/users', users);
 app.use('/api/v1/comments', comments);
 app.use('/api/v1/ratings', ratings);
 app.use('/api/v1/documents', documents);
 
-app.use('/api/v1/documents/:docID/comments', comments);
-app.use('/api/v1/users/:userID/comments', comments);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

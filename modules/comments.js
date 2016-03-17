@@ -27,13 +27,14 @@ exports.retrieveSpecific = function(req, res) {
 
 //gets all comments for a specific doc or user
 exports.retrieve = function(req, res) {
-
+    //console.log(req.params,req.body,req.query);
     verify(req, res, function(req, res) {
         var comment;
         var owner;
         var doc;
-        if (req.headers.docid != null) {
-            database.db.query("select *, COMMENTS.comment as comment, COMMENTS.owner as owner, COMMENTS.doc_id as docID from COMMENTS  where doc_id= (?);",[req.headers.docid], function (err, rows) {
+        console.log(req.query.doc);
+        if (req.query.doc != null) {
+            database.db.query("select * from COMMENTS where doc_id= (?);",[req.query.doc], function (err, rows) {
                 if (err) {
                     res.statusCode = 400;
                     res.json({
@@ -48,15 +49,14 @@ exports.retrieve = function(req, res) {
                 });
             });
         }
-        else if (req.headers.userid != null) {
-            database.db.query("select *, COMMENTS.comment as comment, COMMENTS.owner as owner, COMMENTS.doc_id as docID from COMMENTS  where owner= (?);",[req.headers.userid], function (err, rows) {
+        else if (req.query.user != null) {
+            database.db.query("select * from COMMENTS where owner= (?);",[req.query.user], function (err, rows) {
                 if (err) {
                     res.statusCode = 400;
                     res.json({
                         statusCode: 400,
                         message: "failed to select comment"
                     });
-
                 }
                 res.statusCode = 200;
                 res.json({
