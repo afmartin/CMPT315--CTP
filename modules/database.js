@@ -4,6 +4,7 @@ var file = fs.readFileSync('db_config.json', 'utf8');
 var json = JSON.parse(file);
 
 var environment = process.env.NODE_ENV;
+if (environment === 'dev')  environment = 'development';
 if (environment == undefined) environment = 'development';
 exports.db = mysql.createConnection(json[environment]);
 
