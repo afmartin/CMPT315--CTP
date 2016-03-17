@@ -1,6 +1,6 @@
 var express = require('express');
 var path = require('path');
-var database = require('./../db_config.js');
+var database = require('./database.js');
 
 
 //gets a specific comment

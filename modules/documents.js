@@ -1,4 +1,4 @@
-var database = require('./../db_config.js');
+var database = require('./database.js');
 var path = require('path');
 var fs = require('fs');
 var multer = require('multer');

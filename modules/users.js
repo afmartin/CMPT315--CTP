@@ -1,5 +1,5 @@
 var express = require('express')
-var database = require('./../db_config.js');
+var database = require('./database.js');
 var bcrypt = require('bcryptjs');
 
 function sendResponse(res, code, data) {
