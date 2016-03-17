@@ -1,5 +1,5 @@
 docs
 .idea
 npm-debug.log
-db_config.js
 node_modules
+db_config.json
