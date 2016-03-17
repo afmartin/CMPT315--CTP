@@ -3,13 +3,13 @@ var router = express.Router();
 var users = require('./../modules/users.js');
 
 router.get('/:id', function(req, res) {
-	users.retrieveSpecific(req.params.id, res);
+    users.retrieveSpecific(req.params.id, res);
 });
 
 router.get('/', function(req, res) {
     // Parse query string.
     var conditions = [];
-    for (key in req.query) {
+    for (var key in req.query) {
         var values = req.query[key].split(",");
         conditions.push({
             field: key,
