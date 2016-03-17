@@ -1,9 +1,9 @@
 .PHONY: test
 
-development: packages test
+development: packages
 	NODE_ENV=development npm start
 
-production: packages test
+production: packages
 	NODE_ENV=production npm start
 
 test: packages
