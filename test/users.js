@@ -5,7 +5,7 @@ var database = require('./../modules/database');
 var base_url = 'http://localhost:3000/api/v1/users';
 
 suite('Users', function() {
-    beforeEach(function (done) {
+    this.beforeEach(function (done) {
         // Because of foreign key constraints I can't just truncate :(
         database.dropTables(function() {
             database.createTables(done);
