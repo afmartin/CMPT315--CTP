@@ -18,21 +18,22 @@ exports.deleteDoc = function(req, res){
                 if (er) {
                     return res.json(getRes("db", er.message));
                 }
-            });
-            fs.unlink("docs/" + docID + rows[0]["EXTENSIONS"], function (er) {
-                if (er) {
-                    return res.json(getRes("fs", er.message));
-                }
-            });
-            if (rows[0]["PREVIEW"] !== null) {
-                fs.unlink("docs/" + docID + "_preview" + rows[0]["PREVIEW"], function (er) {
+
+                fs.unlink("docs/" + docID + rows[0]["EXTENSIONS"], function (er) {
                     if (er) {
                         return res.json(getRes("fs", er.message));
                     }
                 });
-            }
+                if (rows[0]["PREVIEW"] !== null) {
+                    fs.unlink("docs/" + docID + "_preview" + rows[0]["PREVIEW"], function (er) {
+                        if (er) {
+                            return res.json(getRes("fs", er.message));
+                        }
+                    });
+                }
+                return res.json(getRes("su"));
+            });
         });
-        return res.json(getRes("su"));
     });
 };
 
