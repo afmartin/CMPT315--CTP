@@ -6,6 +6,8 @@ var assert = require('assert');
 var database = require('./../modules/database');
 var base_url = 'http://localhost:3000/api/v1/documents';
 
+var testFile = '/ip.txt';
+
 suite('Documents', function() {
 
     test('Empty db', function(done) {
@@ -43,7 +45,7 @@ suite('Documents', function() {
                 grade: 2,
                 province: 'AB',
                 ownerID: 1,
-                ul: rest.file('/home/jake/f', null, 13, 'text/plain')
+                ul: rest.file(__dirname + testFile, null, 13, 'text/plain')
             }
         }
         ).on("complete", function(data){
@@ -53,7 +55,7 @@ suite('Documents', function() {
                             grade: 2,
                             province: 'AB',
                             ownerID: 2,
-                            ul: rest.file('/home/jake/f', null, 13, 'text/plain')
+                            ul: rest.file(__dirname + testFile, null, 13, 'text/plain')
                         }
                     }
                 )
