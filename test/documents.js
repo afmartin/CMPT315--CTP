@@ -6,6 +6,9 @@ var assert = require('assert');
 var database = require('./../modules/database');
 var base_url = 'http://localhost:3000/api/v1/documents';
 
+var fs = require('fs');
+
+
 var testFile = '/ip.txt';
 
 suite('Documents', function() {
@@ -83,6 +86,13 @@ suite('Documents', function() {
         });
     });
 
+    test('Can modify a document that DOES belong to you', function(done){
+       rest.put(base_url + '/1?grade=1&province=BC').on('complete', function(data){
+           assert.equal(data.statusCode, 200);
+           done();
+       })
+    });
+
     test('Can delete a document that DOES belong to you', function(done){
         rest.del(base_url + '/1').on('complete', function(data){
             assert.equal(data.statusCode, 200);
@@ -90,7 +100,24 @@ suite('Documents', function() {
         });
     });
 
+    test('Clean up Docs dir', function(done){
+        rmDir("docs", done);
+    });
 
     /** MORE TESTS WLL BE ADDED IN THE FUTURE**/
 
 });
+
+var rmDir = function(dirPath, callback) {
+    try { var files = fs.readdirSync(dirPath); }
+    catch(e) { return; }
+    if (files.length > 0)
+        for (var i = 0; i < files.length; i++) {
+            var filePath = dirPath + '/' + files[i];
+            if (fs.statSync(filePath).isFile())
+                fs.unlinkSync(filePath);
+            else
+                rmDir(filePath);
+        }
+    callback();
+};
