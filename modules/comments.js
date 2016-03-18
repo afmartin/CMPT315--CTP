@@ -1,7 +1,7 @@
 var express = require('express');
 var path = require('path');
 var database = require('./database.js');
-
+var helper = require('./helper');
 //gets a specific comment
 exports.retrieveSpecific = function(req, res) {
     if(isNaN(req.params.cID)){
@@ -78,14 +78,12 @@ exports.retrieve = function(req, res) {
 exports.create = function(req, res) {
 
     verify(req, res, function(req, res) {
-        var docID = req.params.docID;
+        var docID = req.body.docID;
         var userID = req.body.userID;
-        var comment = req.body.comments;
-        var value = true;
-        var queryString = "insert into COMMENTS (doc_id, owner, comment) values (" + docID + ", " + userID + ", ? );"
-        console.log(req.body, queryString);
+        var comment = req.body.comment;
+        var queryString = "insert into COMMENTS (doc_id, owner, comment) values (" + docID + ", " + userID + ", ? );";
 
-        if (docID == null || userID == null || comment == null) {
+        if (req.body.docID == null || req.body.userID == null || req.body.comment == null) {
             res.statusCode = 400;
             res.json({
                 statusCode: 400,
@@ -93,30 +91,29 @@ exports.create = function(req, res) {
             });
         }
         else {
-
             docID = Number(docID);
             userID = Number(userID);
-            console.log(docID, comment, userID);
 
-            database.db.query(queryString, [comment], function (err, rows) {
-                if (err) {
-                    console.log(err);
-                    res.statusCode = 400;
-                    return res.json({
-                        statusCode: 400,
-                        message: "failed to insert comment"
-                    });
-                }
-                res.statusCode = 200;
-                res.json({
-                    message: "insertion successful",
-                    statusCode: 200
+            helper.downloadCheck(docID, userID, res, function(){
+                database.db.query(queryString, [comment], function (err, rows) {
+                    if (err) {
+                        res.statusCode = 500;
+                        res.json({
+                            statusCode: 500,
+                            message: "failed to insert comment"
+                        });
+                    }
+                    else {
+                        res.statusCode = 201;
+                        res.json({
+                            message: "insertion successful",
+                            statusCode: 201
+                        });
+                    }
                 });
             });
         }
-
     });
-
 };
 
 exports.update = function(req, res) {

@@ -1,5 +1,6 @@
 var express = require('express');
 var database = require('./database.js');
+var helper = require('./helper');
 
 exports.retrieveSpecific = function(req, res) {
     var userID = req.header.userID;
@@ -14,11 +15,13 @@ exports.retrieveSpecific = function(req, res) {
             });
         }
         else {
-            //res.statusCode= 200;
-            res.json({"rating": newrating});
+            res.statusCode = 200;
+            res.json({
+                statusCode: 200,
+                rating: rows
+            });
         }
     });
-
  };
 
 //post new rating and updates rating
@@ -36,21 +39,21 @@ exports.create = function(req, res) {
         });
     }
     else {
-        console.log(userID,ownerID,newrating,docID);
-        database.db.query("insert into RATING (user_reviewed_by, owner, rating, doc_id) values (" + userID + ", " + ownerID + " ," + newrating + "," + docID + ");", function (err, rows) {
-            if (err){
-                res.statusCode = 500;
-                res.json({
-                    statusCode: 500,
-                    message: "insert failed"
-                });
-            }
-            else{
-                 res.statusCode = 201;
-                 getRating(docID, newrating, res);
-            }
+        helper.downloadCheck(docID, userID, res,function(){
+            database.db.query("insert into RATING (user_reviewed_by, owner, rating, doc_id) values (" + userID + ", " + ownerID + " ," + newrating + "," + docID + ");", function (err, rows) {
+                if (err) {
+                    res.statusCode = 500;
+                    res.json({
+                        statusCode: 500,
+                        message: "insert failed",
+                    });
+                }
+                else {
+                    res.statusCode = 201;
+                    getRating(docID, newrating, res);
+                }
+            });
         });
-
     }
 };
 
@@ -93,11 +96,12 @@ function updateDocRating(docID, rating, res){
                 message: "update failed"
             });
         }
-
-        res.json({
-            statusCode: res.statusCode,
-            rating: rating
-        });
+        else {
+            res.json({
+                statusCode: res.statusCode,
+                rating: rating
+            });
+        }
     });
 
 }
@@ -117,3 +121,4 @@ function getRating(docID, rating,res){
 
     });
 }
+
