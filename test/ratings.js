@@ -18,7 +18,7 @@ suite('Ratings', function() {
             data: {
                 rating: 1,
                 docID: 1,
-                userID: 3,
+                userID: 1,
                 ownerID: 1
             }
         }).on('complete', function (data) {
@@ -40,6 +40,36 @@ suite('Ratings', function() {
             done();
         });
     });
+
+    test('Get specific rating', function (done) {
+        rest.put(base_url + '/', {
+            data: {
+                rating: 1,
+                docID: 1,
+                userID: 3,
+                ownerID: 1
+            }
+        }).on('complete', function (data) {
+            assert.equal(data.statusCode, 200);
+            done();
+        });
+    });
+
+    test('Invalid attempt to rating doc', function (done) {
+        rest.post(base_url + '/', {
+            data: {
+                rating: 1,
+                docID: 1,
+                userID: 5,
+                ownerID: 1
+            }
+        }).on('complete', function (data) {
+            assert.equal(data.statusCode, 400);
+            done();
+        });
+    });
+
+
 });
 
 
