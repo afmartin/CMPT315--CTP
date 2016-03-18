@@ -19,3 +19,13 @@ authorized username, password and the host inside of the db_config.json
 ```bash
 $ make test|development|production
 ```
+
+Note - If you are running the test suites please ensure the server is
+ running first. For example;
+
+ $ NODE_ENV=test npm start
+
+ and then in a new process
+
+ $ make test
+
