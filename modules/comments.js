@@ -34,7 +34,7 @@ exports.retrieveSpecific = function(req, res) {
 //gets all comments for a specific doc or user
 exports.retrieve = function(req, res) {
     //console.log(req.params,req.body,req.query);
-    verify(req, res, function(req, res) {
+    helper.authenticate(req, res, function() {
         var comment;
         var owner;
         var doc;
