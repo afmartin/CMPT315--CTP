@@ -23,7 +23,7 @@ $ make test|development|production
 Note - If you are running the test suites please ensure the server is
  running first. For example;
 
- $ NODE_ENV=test npm start
+ $ npm install && NODE_ENV=test npm start
 
  and then in a new process
 
