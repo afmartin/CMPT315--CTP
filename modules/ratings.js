@@ -14,7 +14,7 @@ exports.retrieveSpecific = function(req, res) {
             });
         }
         else {
-            res.statusCode= 200;
+            //res.statusCode= 200;
             res.json({"rating": newrating});
         }
     });
@@ -27,7 +27,6 @@ exports.create = function(req, res) {
     var docID = req.body.docID;
     var userID = req.body.userID;
     var ownerID = req.body.ownerID;
-    var rating;
 
     if(docID == null || newrating == null || userID == null || ownerID == null) {
         res.statusCode = 400;
@@ -37,7 +36,7 @@ exports.create = function(req, res) {
         });
     }
     else {
-        console.log(docID, newrating ,userID ,ownerID );
+        console.log(userID,ownerID,newrating,docID);
         database.db.query("insert into RATING (user_reviewed_by, owner, rating, doc_id) values (" + userID + ", " + ownerID + " ," + newrating + "," + docID + ");", function (err, rows) {
             if (err){
                 res.statusCode = 500;
@@ -46,7 +45,10 @@ exports.create = function(req, res) {
                     message: "insert failed"
                 });
             }
-            getRating(docID, newrating, res);
+            else{
+                 res.statusCode = 201;
+                 getRating(docID, newrating, res);
+            }
         });
 
     }
@@ -57,7 +59,6 @@ exports.update = function(req, res) {
     var docID = Number(req.body.docID);
     var newrating = Number(req.body.rating);
     var userID = Number(req.body.userID);
-    var rating;
 
     if(docID == null || newrating == null || userID == null) {
         res.statusCode = 400;
@@ -77,6 +78,7 @@ exports.update = function(req, res) {
             }
 
         });
+        res.statusCode = 200;
         getRating(docID, newrating, res);
     }
 };
@@ -91,9 +93,9 @@ function updateDocRating(docID, rating, res){
                 message: "update failed"
             });
         }
-        res.statusCode = 200;
+
         res.json({
-            statusCode: 200,
+            statusCode: res.statusCode,
             rating: rating
         });
     });

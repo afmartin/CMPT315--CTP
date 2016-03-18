@@ -2,27 +2,33 @@ var express = require('express');
 var path = require('path');
 var database = require('./database.js');
 
-
 //gets a specific comment
 exports.retrieveSpecific = function(req, res) {
-
-    database.db.query("select *, COMMENTS.comment as comment, COMMENTS.owner as owner, COMMENTS.doc_id as docID from COMMENTS where comment_id= (?);", [req.params.cID],function(err, rows){
-        if(err){
-            res.statusCode = 400;
-            res.json({
-                statusCode: 400,
-                message: "failed to select comment"
-            });
-            throw err;
-        }
-        res.statusCode = 200;
+    if(isNaN(req.params.cID)){
+        res.statusCode = 400;
         res.json({
-            "comment": rows[0].comment,
-            "owner": rows[0].owner,
-            "document": rows[0].docID,
-            statusCode: 200
+            statusCode: 400,
+            message: "invalid comment selected"
         });
-    });
+    }
+    else {
+        database.db.query("select *, COMMENTS.comment as comment, COMMENTS.owner as owner, COMMENTS.doc_id as docID from COMMENTS where comment_id= (?);", [req.params.cID], function (err, rows) {
+            if (err) {
+                res.statusCode = 400;
+                res.json({
+                    statusCode: 400,
+                    message: "failed to select comment"
+                });
+            }
+            res.statusCode = 200;
+            res.json({
+                "comment": rows[0].comment,
+                "owner": rows[0].owner,
+                "document": rows[0].docID,
+                statusCode: 200
+            });
+        });
+    }
 };
 
 //gets all comments for a specific doc or user
@@ -32,8 +38,8 @@ exports.retrieve = function(req, res) {
         var comment;
         var owner;
         var doc;
-        console.log(req.query.doc);
-        if (req.query.doc != null) {
+
+        if (req.query.doc != null && !isNaN(req.query.doc) ) {
             database.db.query("select * from COMMENTS where doc_id= (?);",[req.query.doc], function (err, rows) {
                 if (err) {
                     res.statusCode = 400;
@@ -49,7 +55,7 @@ exports.retrieve = function(req, res) {
                 });
             });
         }
-        else if (req.query.user != null) {
+        else if (req.query.user != null && !isNaN(req.query.doc) ) {
             database.db.query("select * from COMMENTS where owner= (?);",[req.query.user], function (err, rows) {
                 if (err) {
                     res.statusCode = 400;
