@@ -61,6 +61,41 @@ suite('Users', function() {
         });
     });
 
+    test('Able to load user list with users with offset and limit', function(done) {
+        rest.post(base_url + '/', {
+            data: {
+                email: "fake@gmail.com",
+                firstName: "Fake",
+                lastName: "Name",
+                password: "badPassword#1"
+            }
+        }).on('complete', function(data) {
+            rest.post(base_url + '/', {
+                data: {
+                    email: "fake2@gmail.com",
+                    firstName: "Fake",
+                    lastName: "Name",
+                    password: "badPassword#2",
+                    bio: "Hello!"
+                }
+            }).on('complete', function(data) {
+                rest.get(base_url + '/', { query: { limit: 1, offset: 1 }}).on('complete', function(data) {
+                    var expected = [
+                    {
+                        id: 2,
+                        email: "fake2@gmail.com",
+                        firstName: "Fake",
+                        lastName: "Name",
+                        bio: "Hello!"
+                    }
+                    ];
+                    assert.deepEqual(data.users, expected);
+                    done();
+                });
+            });
+        });
+    });
+
     test('Able to create user without bio', function(done) {
         rest.post(base_url + '/', {
             data: {

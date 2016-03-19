@@ -49,11 +49,19 @@ function findById(id, callback) {
 function findWhere(conditions, callback) {
     var allowed = ['first_name', 'last_name', 'email'];
     var query = "SELECT U_ID as id, email, first_name as firstName, last_name as lastName, bio FROM USERS ";
+    var limit = null;
+    var offset = null;
+
     for (var i = 0; i < conditions.length; i++) {
         if (conditions[i].field == 'firstName')
             conditions[i].field = 'first_name';
         if (conditions[i].field == 'lastName')
             conditions[i].field = 'last_name';
+
+	if (conditions[i].field == 'limit')
+		limit = conditions[i].values[0];
+	if (conditions[i].field == 'offset')
+		offset = conditions[i].values[0];
 
         // Not an allowed search term ignore.
         if (allowed.indexOf(conditions[i].field) == -1)
@@ -67,6 +75,15 @@ function findWhere(conditions, callback) {
         }
         query += " )";
     }
+
+    // if limit and offset add it
+    if (limit !== null && !isNaN(limit)) {
+	query += " LIMIT " + limit;
+	// You can only use offset when a limit is defined.
+	if (offset !== null && !isNaN(offset))
+	    query += " OFFSET " + offset;
+    }
+
     try {
         database.db.query(query, function(err, rows) {
             if (err) {
