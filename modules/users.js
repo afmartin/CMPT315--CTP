@@ -1,6 +1,8 @@
 var express = require('express');
 var database = require('./database.js');
 var bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
+
 
 function sendResponse(res, code, data) {
     res.statusCode = code;
@@ -237,4 +239,44 @@ module.exports.update = function(id, user_changes, res) {
             });
         }
     });
+};
+
+
+module.exports.getAuthentication = function(req, res){
+    var user = [];
+    user.email = req.body.email;
+    user.password = req.body.password;
+    var query = "select *, u_id from USERS where email = ? and password = ? ;";
+    validateUser(user, function(errors) {
+        if (errors.length > 0) {
+            sendResponse(res, 400, {
+                message: "User data failed validation",
+                errors: errors
+            });
+            return;
+        }
+        else{
+            database.db.query(query,[user.email,user.password],function(err,rows){
+                if (err) {
+                    console.log(query,err);
+                    sendResponse(res, 400, {message: "Failed to authenticate user"});
+                } else {
+                    var token = jwt.sign(user,'superSecret', {
+                        expiresIn: 14400 // expires in 24 hours
+                    });
+                    console.log(token);
+                    // return the information including token as JSON
+                    res.json({
+                        userID: rows[0].u_id,
+                        success: true,
+                        message: 'Enjoy your token!',
+                        token: token
+                    });
+                }
+            });
+        }
+    });
+
+
+
 };

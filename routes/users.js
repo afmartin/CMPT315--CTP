@@ -31,4 +31,8 @@ router.delete('/:id', function(req, res) {
     users.delete(req.params.id, res);
 });
 
+router.post('/authenticate', function(req, res) {
+    users.getAuthentication(req, res);
+});
+
 module.exports = router;
