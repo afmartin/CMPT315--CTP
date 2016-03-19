@@ -48,11 +48,13 @@ exports.retrieve = function(req, res) {
                         message: "failed to select comment"
                     });
                 }
-                res.statusCode = 200;
-                res.json({
-                    "comments": rows,
-                    statusCode: 200
-                });
+                else {
+                    res.statusCode = 200;
+                    res.json({
+                        "comments": rows,
+                        statusCode: 200
+                    });
+                }
             });
         }
         else if (req.query.user != null && !isNaN(req.query.doc) ) {
@@ -64,12 +66,13 @@ exports.retrieve = function(req, res) {
                         message: "failed to select comment"
                     });
                 }
-                res.statusCode = 200;
-                res.json({
-                    comments: rows,
-                    statusCode: 200
-                });
-
+                else {
+                    res.statusCode = 200;
+                    res.json({
+                        comments: rows,
+                        statusCode: 200
+                    });
+                }
             });
         }
     });
