@@ -243,25 +243,29 @@ module.exports.update = function(id, user_changes, res) {
 
 
 module.exports.getAuthentication = function(req, res){
+    if(req.body.email == undefined || req.body.password == undefined){
+        sendResponse(res, 400, {message: "Invalid email or password"});
+    }
     var user = [];
     user.email = req.body.email;
     user.password = req.body.password;
-    var query = "select *, u_id from USERS where email = ? and password = ? ;";
-    validateUser(user, function(errors) {
-        if (errors.length > 0) {
-            sendResponse(res, 400, {
-                message: "User data failed validation",
-                errors: errors
-            });
-            return;
+
+    var query = "select * from USERS where email=?;";
+
+    database.db.query(query,[user.email],function(err,rows){
+        if (err) {
+            console.log(query,err);
+            res.json({statusCode: 400, message: "DB error"})
+        } else if(rows.length == 0) {
+            sendResponse(res, 400, {message: "Invalid email or password"});
         }
-        else{
-            database.db.query(query,[user.email,user.password],function(err,rows){
-                if (err) {
-                    console.log(query,err);
-                    sendResponse(res, 400, {message: "Failed to authenticate user"});
-                } else {
-                    var token = jwt.sign(user,'superSecret', {
+        else {
+            bcrypt.compare(user.password, rows[0]["PASSWORD"], function (err, r) {
+                if (err || !r) {
+                    return res.json({statusCode: 500, message: "Authentication failure"});
+                }
+                else {
+                    var token = jwt.sign(user, 'superSecret', {
                         expiresIn: 14400 // expires in 24 hours
                     });
                     console.log(token);
@@ -275,8 +279,7 @@ module.exports.getAuthentication = function(req, res){
                 }
             });
         }
+
     });
-
-
 
 };

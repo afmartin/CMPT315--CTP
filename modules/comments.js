@@ -3,7 +3,7 @@ var path = require('path');
 var database = require('./database.js');
 var helper = require('./helper');
 //gets a specific comment
-exports.retrieveSpecific = function(req, res) {
+module.exports.retrieveSpecific = function(req, res) {
     if(isNaN(req.params.cID)){
         res.statusCode = 400;
         res.json({
@@ -20,19 +20,21 @@ exports.retrieveSpecific = function(req, res) {
                     message: "failed to select comment"
                 });
             }
-            res.statusCode = 200;
-            res.json({
-                "comment": rows[0].comment,
-                "owner": rows[0].owner,
-                "document": rows[0].docID,
-                statusCode: 200
-            });
+            else {
+                res.statusCode = 200;
+                res.json({
+                    "comment": rows[0].comment,
+                    "owner": rows[0].owner,
+                    "document": rows[0].docID,
+                    statusCode: 200
+                });
+            }
         });
     }
 };
 
 //gets all comments for a specific doc or user
-exports.retrieve = function(req, res) {
+module.exports.retrieve = function(req, res) {
     //console.log(req.params,req.body,req.query);
     helper.authenticate(req, res, function() {
         var comment;
@@ -40,7 +42,7 @@ exports.retrieve = function(req, res) {
         var doc;
 
         if (req.query.doc != null && !isNaN(req.query.doc) ) {
-            database.db.query("select * from COMMENTS where doc_id= (?);",[req.query.doc], function (err, rows) {
+            database.db.query("select * from COMMENTS where doc_id = (?);",[req.query.doc], function (err, rows) {
                 if (err) {
                     res.statusCode = 400;
                     res.json({
@@ -58,7 +60,7 @@ exports.retrieve = function(req, res) {
             });
         }
         else if (req.query.user != null && !isNaN(req.query.doc) ) {
-            database.db.query("select * from COMMENTS where owner= (?);",[req.query.user], function (err, rows) {
+            database.db.query("select * from COMMENTS where owner = (?);",[req.query.user], function (err, rows) {
                 if (err) {
                     res.statusCode = 400;
                     res.json({
@@ -78,9 +80,9 @@ exports.retrieve = function(req, res) {
     });
 };
 
-exports.create = function(req, res) {
+module.exports.create = function(req, res) {
 
-    verify(req, res, function(req, res) {
+    helper.authenticate(req, res, function() {
         var docID = req.body.docID;
         var userID = req.body.userID;
         var comment = req.body.comment;
@@ -119,15 +121,14 @@ exports.create = function(req, res) {
     });
 };
 
-exports.update = function(req, res) {
-    verify(req, res, function(req, res) {
+module.exports.update = function(req, res) {
+    verifyCanModifyComment(req, res, function(req, res) {
         var docID = req.body.docID;
         var comment = req.body.comment;
         var userID = req.body.userID;
         var cID = req.params.cID;
 
         if (docID == null || comment == null || userID == null) {
-            console.log(docID, userID, comment);
             res.statusCode = 400;
             res.json({
                 statusCode: 400,
@@ -138,7 +139,7 @@ exports.update = function(req, res) {
             docID = Number(docID);
             userID = Number(userID);
 
-            database.db.query("update COMMENTS set comment = ? where COMMENTS.comment_id= " + cID + ";", [comment], function (err, rows) {
+            database.db.query("update COMMENTS set comment = ? where COMMENTS.comment_id= ? ;", [cID,comment], function (err, rows) {
                 if (err) {
                     res.statusCdoe= 400;
                     res.json({
@@ -146,19 +147,21 @@ exports.update = function(req, res) {
                         message: "failed to update comment",
                     });
                 }
-                res.statusCode = 200;
-                res.json({
-                    message: "update successful",
-                    statusCode: 200
-                });
+                else {
+                    res.statusCode = 200;
+                    res.json({
+                        message: "update successful",
+                        statusCode: 200
+                    });
+                }
             });
         }
     });
 };
 
-exports.delete = function(req, res){
-    verify(req, res, function(req, res) {
-        var cID = Number(req.params.cid);
+module.exports.delete = function(req, res){
+    verifyCanModifyComment(req, res, function(req, res) {
+        var cID = Number(req.params.cID);
         if (cID == null) {
             res.statusCode = 400;
             res.json({
@@ -175,16 +178,52 @@ exports.delete = function(req, res){
                         message: "failed to delete comment",
                     });
                 }
-                res.statusCode = 200;
-                res.json({
-                    message: "update successful",
-                    statusCode: 200
-                });
+                else {
+                    res.statusCode = 200;
+                    res.json({
+                        message: "delete successful",
+                        statusCode: 200
+                    });
+                }
             });
         }
     });
 };
 
-function verify(req, res, callback){
-    return callback(req,res)
+function verifyCanModifyComment(req, res, next){
+    var userID = req.body.userID;
+    var cID = Number(req.params.cID);
+    if(!isNaN(cID)){
+        database.db.query("select COMMENTS.comment_id as comment_id from COMMENTS where owner = ? and comment_id = ?",[userID,cID],function(err,rows){
+            if (err) {
+                res.statusCode = 500;
+                res.json({
+                    statusCode: 500,
+                    message: "failed to verify comment for user",
+                });
+            }
+            else if(rows == null ){
+
+                res.statusCode = 400;
+                res.json({
+                    statusCode: 400,
+                    message: "cannot modify comment that does not belong to you",
+                });
+            }
+            else{
+                return next(req,res)
+            }
+        });
+
+    }
+    else{
+        res.statusCode = 400;
+        res.json({
+            statusCode: 400,
+            message: "invalid comment id",
+        });
+    }
+
+
+
 }
