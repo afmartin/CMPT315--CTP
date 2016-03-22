@@ -4,10 +4,6 @@ var jwt = require('jsonwebtoken');
 var app = express();
 var bcrypt = require('bcryptjs');
 
-//borrowed from users mod
-function hashPassword(string) {
-    return bcrypt.hashSync(string, 10);
-}
 //Creates false data for testing
 exports.createFalseData = function(callback){
 
@@ -33,7 +29,6 @@ exports.createFalseData = function(callback){
                 if (count == query.length - 1) callback();
             }
         });
-
     }
 };
 
@@ -81,7 +76,8 @@ exports.authenticate = function (req,res,next){
             }
         });
 
-    } else {
+    }
+    else {
         // if there is no token
         // return an error
         return res.status(403).send({

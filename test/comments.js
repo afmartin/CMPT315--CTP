@@ -76,4 +76,22 @@ suite('Comments', function() {
         });
     });
 
+    test('Able to retrieve all comments for doc', function (done) {
+        var user = [];
+        user.email = 'janesmith@mailinator.com';
+        user.password = bcrypt.hashSync("badpassword#1", 10);
+        var token = jwt.sign(user, 'superSecret', {
+            expiresIn: 14400 // expires in 24 hours
+        });
+        rest.get(base_url + '/?docID=1', {
+            data: {
+                token: token,
+            }
+        }).on('complete', function (data) {
+            assert.equal(data.statusCode, 200);
+            done();
+        });
+    });
+
+
 });

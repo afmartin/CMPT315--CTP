@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var database = require('./database.js');
 var helper = require('./helper');
+//angular.codeschool.com need to look at
 //gets a specific comment
 module.exports.retrieveSpecific = function(req, res) {
     if(isNaN(req.params.cID)){
@@ -38,11 +39,11 @@ module.exports.retrieve = function(req, res) {
     //console.log(req.params,req.body,req.query);
     helper.authenticate(req, res, function() {
         var comment;
-        var owner;
-        var doc;
-
-        if (req.query.doc != null && !isNaN(req.query.doc) ) {
-            database.db.query("select * from COMMENTS where doc_id = (?);",[req.query.doc], function (err, rows) {
+        var doc = req.query.docID;
+        var owner = req.query.userID;
+        console.log(doc,owner,"hello world");
+        if (doc != null && !isNaN(doc) ) {
+            database.db.query("select * from COMMENTS where doc_id = (?);",[doc], function (err, rows) {
                 if (err) {
                     res.statusCode = 400;
                     res.json({
@@ -59,7 +60,7 @@ module.exports.retrieve = function(req, res) {
                 }
             });
         }
-        else if (req.query.user != null && !isNaN(req.query.doc) ) {
+        else if (owner != null && !isNaN(owner) ) {
             database.db.query("select * from COMMENTS where owner = (?);",[req.query.user], function (err, rows) {
                 if (err) {
                     res.statusCode = 400;
@@ -193,37 +194,38 @@ module.exports.delete = function(req, res){
 function verifyCanModifyComment(req, res, next){
     var userID = req.body.userID;
     var cID = Number(req.params.cID);
-    if(!isNaN(cID)){
-        database.db.query("select COMMENTS.comment_id as comment_id from COMMENTS where owner = ? and comment_id = ?",[userID,cID],function(err,rows){
-            if (err) {
-                res.statusCode = 500;
-                res.json({
-                    statusCode: 500,
-                    message: "failed to verify comment for user",
-                });
-            }
-            else if(rows == null ){
+    helper.authenticate(req, res, function() {
+        if (!isNaN(cID)) {
+            database.db.query("select COMMENTS.comment_id as comment_id from COMMENTS where owner = ? and comment_id = ?", [userID, cID], function (err, rows) {
+                if (err) {
+                    res.statusCode = 500;
+                    res.json({
+                        statusCode: 500,
+                        message: "failed to verify comment for user",
+                    });
+                }
+                else if (rows == null) {
 
-                res.statusCode = 400;
-                res.json({
-                    statusCode: 400,
-                    message: "cannot modify comment that does not belong to you",
-                });
-            }
-            else{
-                return next(req,res)
-            }
-        });
+                    res.statusCode = 400;
+                    res.json({
+                        statusCode: 400,
+                        message: "cannot modify comment that does not belong to you",
+                    });
+                }
+                else {
+                    return next(req, res)
+                }
+            });
 
-    }
-    else{
-        res.statusCode = 400;
-        res.json({
-            statusCode: 400,
-            message: "invalid comment id",
-        });
-    }
-
+        }
+        else {
+            res.statusCode = 400;
+            res.json({
+                statusCode: 400,
+                message: "invalid comment id",
+            });
+        }
+    });
 
 
 }
