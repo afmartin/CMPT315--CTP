@@ -246,7 +246,7 @@ module.exports.getAuthentication = function(req, res){
     if(req.body.email == undefined || req.body.password == undefined){
         sendResponse(res, 400, {message: "Invalid email or password"});
     }
-    var user = [];
+    var user = {};
     user.email = req.body.email;
     user.password = req.body.password;
 
@@ -262,16 +262,16 @@ module.exports.getAuthentication = function(req, res){
         else {
             bcrypt.compare(user.password, rows[0]["PASSWORD"], function (err, r) {
                 if (err || !r) {
-                    return res.json({statusCode: 500, message: "Authentication failure"});
+                    sendResponse(res, 500, {message: "Authentication failure"});
+                    return;
                 }
                 else {
+                    user.userID = rows[0].U_ID;
                     var token = jwt.sign(user, 'superSecret', {
                         expiresIn: 14400 // expires in 24 hours
                     });
-                    console.log(token);
                     // return the information including token as JSON
                     res.json({
-                        userID: rows[0].u_id,
                         success: true,
                         message: 'Enjoy your token!',
                         token: token

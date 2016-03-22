@@ -20,6 +20,7 @@ suite('Comments', function() {
         var user = [];
         user.email = 'janesmith@mailinator.com';
         user.password = bcrypt.hashSync("badpassword#1", 10);
+        user.userID = 1;
         var token = jwt.sign(user, 'superSecret', {
             expiresIn: 14400 // expires in 24 hours
         });
