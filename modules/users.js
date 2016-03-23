@@ -229,7 +229,7 @@ module.exports.update = function(id, user_changes, res) {
                         errors: errors
                     });
                 } else {
-                    user.password = hashPassword(user_changes.password);
+                    user_changes.password = hashPassword(user_changes.password);
                     update(user_changes, Number(id), function() {
                         sendResponse(res, 200, {message: "User updated successfully"});
                     }, function() {
@@ -272,7 +272,7 @@ module.exports.getAuthentication = function(req, res){
                     });
                     // return the information including token as JSON
                     res.json({
-                        success: true,
+                        statusCode: 200,
                         message: 'Enjoy your token!',
                         token: token
                     });
