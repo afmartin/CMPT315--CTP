@@ -1,6 +1,8 @@
 var rest = require('restler');
 var assert = require('assert');
 var database = require('./../modules/database');
+var jwt = require('jsonwebtoken');
+var helper = require('../modules/helper.js');
 
 var base_url = 'http://localhost:3000/api/v1/users';
 
@@ -214,7 +216,7 @@ suite('Users', function() {
 
     test('Specific user request with a non-integer ID must fail', function(done) {
         rest.get(base_url + '/a').on('complete', function(data) {
-            assert.equal(data.statusCode, 400);
+            assert.equal(data.statusCode, 404);
             done();
         });
     });
@@ -226,29 +228,121 @@ suite('Users', function() {
         });
     });
 
-    /** IMPORTANT: Please revise when authentication is implemented!!! **/
-    test('Delete without id is not a valid route', function(done) {
-        rest.del(base_url + '/').on('complete', function(data) {
-            assert.equal(data.statusCode, 404);
+    test('Can login', function(done) {
+        rest.post(base_url + '/', {
+            data: {
+                email: "fake@gmail.com",
+                firstName: "Fake",
+                lastName: "Name",
+                password: "badPassword#1"
+            }
+        }).on('complete', function(data) {
+            rest.post(base_url + '/authenticate', {
+                data: {
+                    email: 'fake@gmail.com',
+                    password: 'badPassword#1'
+                }
+            }).on("complete", function (data) {
+                token = data.token;
+                jwt.verify(token, helper.getSecret(), function (err, decoded) {
+                    assert.equal(decoded.userID, 1);
+                });
+                assert.equal(data.statusCode, 200);
+                done();
+            });
+        });
+    });
+
+    test('Login with no data should fail', function(done) {
+        rest.post(base_url + '/authenticate').on('complete', function(data) {
+            assert.equal(data.statusCode, 400);
             done();
+        });
+    });
+
+    test('Invalid credentials should fail', function(done) {
+        rest.post(base_url + '/authenticate', {
+            data: {
+                email: 'billnye@mail.com',
+                password: 'thescienceguy'
+            }
+        }).on('complete', function(data) {
+            assert.equal(data.statusCode, 400);
+            done();
+        });
+    });
+
+    test('Delete without id is not a valid route', function(done) {
+        rest.post(base_url + '/', {
+            data: {
+                email: "fake@gmail.com",
+                firstName: "Fake",
+                lastName: "Name",
+                password: "badPassword#1"
+            }
+        }).on('complete', function(data) {
+            rest.post(base_url + '/authenticate', {
+                data: {
+                    email: 'fake@gmail.com',
+                    password: 'badPassword#1'
+                }
+            }).on('complete', function(data) {
+                rest.del(base_url + '/', { data: { token: data.token }}).on('complete', function(data) {
+                            assert.equal(data.statusCode, 404);
+                            done();
+                });
+            });
         });
     });
 
     test('Cannot delete non-existant user', function(done) {
-        rest.del(base_url + '/1').on('complete', function(data) {
-            assert.equal(data.statusCode, 400);
-            done();
+        rest.post(base_url + '/', {
+            data: {
+                email: "fake@gmail.com",
+                firstName: "Fake",
+                lastName: "Name",
+                password: "badPassword#1"
+            }
+        }).on('complete', function(data) {
+            rest.post(base_url + '/authenticate', {
+                data: {
+                    email: 'fake@gmail.com',
+                    password: 'badPassword#1'
+                }
+            }).on('complete', function(data) {
+                rest.del(base_url + '/2', { data: { token: data.token }}).on('complete', function(data) {
+                            assert.equal(data.statusCode, 404);
+                            done();
+                });
+            });
         });
     });
 
     test('Cannot delete user with non-numerical id', function(done) {
-        rest.del(base_url + '/a').on('complete', function(data) {
-            assert.equal(data.statusCode, 400);
-            done();
+        rest.post(base_url + '/', {
+            data: {
+                email: "fake@gmail.com",
+                firstName: "Fake",
+                lastName: "Name",
+                password: "badPassword#1"
+            }
+        }).on('complete', function(data) {
+            rest.post(base_url + '/authenticate', {
+                data: {
+                    email: 'fake@gmail.com',
+                    password: 'badPassword#1'
+                }
+            }).on('complete', function(data) {
+                rest.del(base_url + '/a', { data: { token: data.token }}).on('complete', function(data) {
+                        assert.equal(data.statusCode, 404);
+                        done();
+                });
+            });
         });
+
     });
 
-    test('Can delete existant user', function(done) {
+    test('Cannot delete existant user if not logged in', function(done) {
         rest.post(base_url + '/', {
             data: {
                 email: "fake@gmail.com",
@@ -258,34 +352,45 @@ suite('Users', function() {
             }
         }).on('complete', function(data) {
             rest.del(base_url + '/1').on('complete', function(data) {
-                assert.equal(data.statusCode, 200);
+                assert.equal(data.statusCode, 403);
                 done();
             });
         });
     });
 
-    test('Put without id is not a valid route', function(done) {
-        rest.put(base_url + '/').on('complete', function(data) {
-            assert.equal(data.statusCode, 404);
-            done();
-        });
+    test('Cannot delete another person\'s account', function(done) {
+         rest.post(base_url + '/', {
+                data: {
+                    email: "fake@gmail.com",
+                    firstName: "Fake",
+                    lastName: "Name",
+                    password: "badPassword#1"
+                }
+            }).on('complete', function(data) {
+                rest.post(base_url + '/', {
+                    data: {
+                        email: "fake2@gmail.com",
+                        firstName: "Fake",
+                        lastName: "Name",
+                        password: "badPassword#2"
+                    }
+                }).on('complete', function(data) {
+                    rest.post(base_url + '/authenticate', {
+                        data: {
+                            email: 'fake@gmail.com',
+                            password: 'badPassword#1'
+                        }
+                }).on("complete", function (data) {
+                     rest.del(base_url + '/2', { data: { token: data.token } }).on('complete', function(data) {
+                                    assert.equal(data.statusCode, 403);
+                                    done();
+                            });
+                     });
+                });
+         });
     });
 
-    test('Cannot update non-existant user', function(done) {
-        rest.put(base_url + '/1').on('complete', function(data) {
-            assert.equal(data.statusCode, 400);
-            done();
-        });
-    });
-
-    test('Cannot update user with non-numerical id', function(done) {
-        rest.put(base_url + '/a').on('complete', function(data) {
-            assert.equal(data.statusCode, 400);
-            done();
-        });
-    });
-
-    test('Can update existant user', function(done) {
+    test('Can delete your own account', function(done) {
         rest.post(base_url + '/', {
             data: {
                 email: "fake@gmail.com",
@@ -294,24 +399,141 @@ suite('Users', function() {
                 password: "badPassword#1"
             }
         }).on('complete', function(data) {
-            rest.put(base_url + '/1', {
-                data:
-                {
-                    email: "fake@gmail.com",
-                    firstName: "Bob",
-                    lastName: "Name",
-                    password: "badPassword#1"
+            rest.post(base_url + '/authenticate', {
+                data: {
+                    email: 'fake@gmail.com',
+                    password: 'badPassword#1'
                 }
             }).on('complete', function(data) {
-                assert.equal(200, data.statusCode);
-                rest.get(base_url + '/1').on('complete', function(data) {
-                    assert.equal("fake@gmail.com", data.user.email);
-                    assert.equal("Bob", data.user.firstName);
-                    assert.equal("Name", data.user.lastName);
+                rest.del(base_url + '/1', { data: { token: data.token }}).on('complete', function(data) {
+                    assert.equal(data.statusCode, 200);
                     done();
                 });
             });
         });
     });
-    /** END **/
+
+
+    test('Put without id is not a valid route', function(done) {
+        rest.post(base_url + '/', {
+            data: {
+                email: "fake@gmail.com",
+                firstName: "Fake",
+                lastName: "Name",
+                password: "badPassword#1"
+            }
+        }).on('complete', function(data) {
+            rest.post(base_url + '/authenticate', {
+                data: {
+                    email: 'fake@gmail.com',
+                    password: 'badPassword#1'
+                }
+            }).on('complete', function(data) {
+                rest.put(base_url + '/', { data: { token: data.token }}).on('complete', function(data) {
+                    assert.equal(data.statusCode, 404);
+                    done();
+                });
+            });
+        });
+    });
+
+    test('Cannot update non-existant user', function(done) {
+        rest.post(base_url + '/', {
+            data: {
+                email: "fake@gmail.com",
+                firstName: "Fake",
+                lastName: "Name",
+                password: "badPassword#1"
+            }
+        }).on('complete', function(data) {
+            rest.post(base_url + '/authenticate', {
+                data: {
+                    email: 'fake@gmail.com',
+                    password: 'badPassword#1'
+                }
+            }).on('complete', function(data) {
+                rest.put(base_url + '/2', { data: { token: data.token }}).on('complete', function(data) {
+                    assert.equal(data.statusCode, 404);
+                    done();
+                });
+            });
+        });
+    });
+
+    test('Cannot update user with non-numerical id', function(done) {
+        rest.put(base_url + '/a').on('complete', function(data) {
+            assert.equal(data.statusCode, 404);
+            done();
+        });
+    });
+
+    test('Can update your account', function(done) {
+        rest.post(base_url + '/', {
+            data: {
+                email: "fake@gmail.com",
+                firstName: "Fake",
+                lastName: "Name",
+                password: "badPassword#1"
+            }
+        }).on('complete', function(data) {
+            rest.post(base_url + '/authenticate', {
+                data: {
+                    email: 'fake@gmail.com',
+                    password: 'badPassword#1'
+                }
+            }).on('complete', function(data) {
+                rest.put(base_url + '/1', {
+                    data:
+                    {
+                        token: data.token,
+                        email: "fake@gmail.com",
+                        firstName: "Bob",
+                        lastName: "Name",
+                        password: "badPassword#1"
+                    }
+                }).on('complete', function(data) {
+                    assert.equal(200, data.statusCode);
+                    rest.get(base_url + '/1').on('complete', function(data) {
+                        assert.equal("fake@gmail.com", data.user.email);
+                        assert.equal("Bob", data.user.firstName);
+                        assert.equal("Name", data.user.lastName);
+                        done();
+                    });
+                });
+            });
+        });
+    });
+    test('Cannot update another person\'s account', function(done) {
+         rest.post(base_url + '/', {
+                data: {
+                    email: "fake@gmail.com",
+                    firstName: "Fake",
+                    lastName: "Name",
+                    password: "badPassword#1"
+                }
+            }).on('complete', function(data) {
+                rest.post(base_url + '/', {
+                    data: {
+                        email: "fake2@gmail.com",
+                        firstName: "Fake",
+                        lastName: "Name",
+                        password: "badPassword#2"
+                    }
+                }).on('complete', function(data) {
+                    rest.post(base_url + '/authenticate', {
+                        data: {
+                            email: 'fake@gmail.com',
+                            password: 'badPassword#1'
+                        }
+                }).on("complete", function (data) {
+                     rest.put(base_url + '/2', { data: { token: data.token } }).on('complete', function(data) {
+                                    assert.equal(data.statusCode, 403);
+                                    done();
+                            });
+                     });
+                });
+         });
+    });
+
+
 });

@@ -5,6 +5,7 @@ var helper = require('./../modules/helper');
 var base_url = 'http://localhost:3000/api/v1/comments';
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
+var helper = require('../modules/helper.js');
 
 
 suite('Comments', function() {
@@ -21,7 +22,7 @@ suite('Comments', function() {
         user.email = 'janesmith@mailinator.com';
         user.password = bcrypt.hashSync("badpassword#1", 10);
         user.userID = 1;
-        var token = jwt.sign(user, 'superSecret', {
+        var token = jwt.sign(user, helper.getSecret(), {
             expiresIn: 14400 // expires in 24 hours
         });
         rest.post(base_url + '/', {
@@ -41,7 +42,7 @@ suite('Comments', function() {
         var user = [];
         user.email = 'janesmith@mailinator.com';
         user.password = bcrypt.hashSync("badpassword#1", 10);
-        var token = jwt.sign(user, 'superSecret', {
+        var token = jwt.sign(user, helper.getSecret(), {
             expiresIn: 14400 // expires in 24 hours
         });
         rest.put(base_url + '/1', {
@@ -61,7 +62,7 @@ suite('Comments', function() {
         var user = [];
         user.email = 'janesmith@mailinator.com';
         user.password = bcrypt.hashSync("badpassword#1", 10);
-        var token = jwt.sign(user, 'superSecret', {
+        var token = jwt.sign(user, helper.getSecret(), {
             expiresIn: 14400 // expires in 24 hours
         });
         rest.del(base_url + '/1', {
@@ -81,7 +82,7 @@ suite('Comments', function() {
         var user = [];
         user.email = 'janesmith@mailinator.com';
         user.password = bcrypt.hashSync("badpassword#1", 10);
-        var token = jwt.sign(user, 'superSecret', {
+        var token = jwt.sign(user, helper.getSecret(), {
             expiresIn: 14400 // expires in 24 hours
         });
         rest.get(base_url + '/?docID=1', {

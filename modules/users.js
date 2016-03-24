@@ -183,7 +183,7 @@ module.exports.retrieve = function(conditions, res) {
 
 module.exports.retrieveSpecific = function(id, res) {
     if (isNaN(id)) {
-        sendResponse(res, 400, { message: "User id must be a number" });
+        sendResponse(res, 404, { message: "User id must be a number" });
         return;
     }
     findById(Number(id), function(user) {
@@ -198,13 +198,14 @@ module.exports.retrieveSpecific = function(id, res) {
 module.exports.delete = function(req, res) {
     var id = req.params.id;
     if (isNaN(id)) {
-        sendResponse(res, 400, { message: "User id must be a number" });
+        sendResponse(res, 404, { message: "User id must be a number" });
         return;
     }
     helper.authenticate(req, res, function() {
         findById(Number(id), function(user) {
+            console.log(user);
             if (user === undefined) {
-                sendResponse(res, 400, { message: "User does not exist" });
+                sendResponse(res, 404, { message: "User does not exist" });
             } else if (req.decoded.userID == Number(id)) {
                 deleteById(Number(id), function() {
                     sendResponse(res, 200, { message: "User deleted" });
@@ -223,13 +224,13 @@ module.exports.update = function(req, res) {
     var user_changes = req.body;
 
     if (isNaN(id)) {
-        sendResponse(res, 400, { message: "User id must be a number" });
+        sendResponse(res, 404, { message: "User id must be a number" });
         return;
     }
     helper.authenticate(req, res, function() {
         findById(Number(id), function(user) {
             if (user === undefined) {
-                sendResponse(res, 400, { message: "User not found" });
+                sendResponse(res, 404, { message: "User not found" });
             } else if (req.decoded.userID == Number(id)) {
                 validateUser(user_changes, function(errors) {
                     if (errors.length > 0) {
@@ -257,6 +258,7 @@ module.exports.update = function(req, res) {
 module.exports.getAuthentication = function(req, res){
     if(req.body.email == undefined || req.body.password == undefined){
         sendResponse(res, 400, {message: "Invalid email or password"});
+        return;
     }
     var user = {};
     user.email = req.body.email;
