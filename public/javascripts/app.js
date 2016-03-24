@@ -1,6 +1,6 @@
 
 (function() {
-    var app = angular.module('ctp', []);
+    var app = angular.module('ctp', ["home", "users", "myDocs"]);
 
     app.controller("mainController", function(){
         this.tab = 1;
@@ -14,11 +14,10 @@
         };
     });
 
-
     app.directive("mainTabs", function() {
         return {
             restrict: "E",
-            templateUrl: "../html/main-tabs.html",
+            templateUrl: "../html/main-tabs.html"
         };
     });
 
