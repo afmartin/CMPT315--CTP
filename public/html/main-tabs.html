@@ -1,3 +1,4 @@
+<header header ng-show="true"></header>
 <nav>
     <ul>
         <li ng-class="{active:tab.isSet(1) }">
@@ -17,12 +18,14 @@
 </nav>
 <div id="tableContainer">
 <div id="tableRow">
+
     <sidebar id="documents"></sidebar>
     <section id="main">
         <home ng-show="tab.isSet(1)"></home>
         <my-docs ng-show="tab.isSet(2)"></my-docs>
         <about ng-show="tab.isSet(3)"></about>
         <contact ng-show="tab.isSet(4)"></contact>
+        <signup ng-show="tab.isSet(5)"></signup>
     </section>
 
 </div>

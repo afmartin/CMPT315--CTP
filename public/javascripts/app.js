@@ -2,7 +2,7 @@
 (function() {
     var app = angular.module('ctp', []);
 
-    app.controller("tabController", function(){
+    app.controller("mainController", function(){
         this.tab = 1;
 
         this.isSet = function(checkTab) {
@@ -69,6 +69,13 @@
            restrict: 'E',
            templateUrl: "../html/sidebar.html"
        }
+    });
+
+    app.directive("signup", function(){
+        return{
+            restrict: 'E',
+            templateUrl: "../html/signup.html"
+        }
     });
 
 })();
