@@ -1,8 +1,8 @@
 var express = require('express');
 var database = require('./../modules/database');
 var jwt = require('jsonwebtoken');
-var app = express();
 var bcrypt = require('bcryptjs');
+var fs = require('fs');
 
 //Creates false data for testing
 exports.createFalseData = function(callback){
@@ -57,6 +57,13 @@ exports.downloadCheck = function(docID, userID, res, callback){
     });
 
 };
+
+exports.getSecret = function() {
+    var file = fs.readFileSync('config.json', 'utf8');
+    var json = JSON.parse(file);
+    return json.secret;
+}
+
 //https://scotch.io/tutorials/authenticate-a-node-js-api-with-json-web-tokens
 exports.authenticate = function (req,res,next){
 
@@ -66,9 +73,11 @@ exports.authenticate = function (req,res,next){
     if (token) {
 
         // verifies secret and checks exp
-        jwt.verify(token, 'superSecret', function(err, decoded) {
+        jwt.verify(token, exports.getSecret(), function(err, decoded) {
             if (err) {
-                return res.json({ success: false, message: 'Failed to authenticate token.' });
+                res.statusCode = 500;
+                return res.json({ statusCode: 500,
+                                  message: 'Failed to authenticate token.' });
             } else {
                 // if everything is good, save to request for use in other routes
                 req.decoded = decoded;
@@ -80,8 +89,9 @@ exports.authenticate = function (req,res,next){
     else {
         // if there is no token
         // return an error
-        return res.status(403).send({
-            success: false,
+        res.statusCode = 403;
+        return res.json({
+            statusCode: 403,
             message: 'No token provided.'
         });
     }

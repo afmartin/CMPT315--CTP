@@ -2,7 +2,7 @@ var express = require('express');
 var database = require('./database.js');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
-
+var helper = require('./helper');
 
 function sendResponse(res, code, data) {
     res.statusCode = code;
@@ -195,49 +195,61 @@ module.exports.retrieveSpecific = function(id, res) {
     });
 };
 
-module.exports.delete = function(id, res) {
+module.exports.delete = function(req, res) {
+    var id = req.params.id;
     if (isNaN(id)) {
         sendResponse(res, 400, { message: "User id must be a number" });
         return;
     }
-    findById(Number(id), function(user) {
-        if (user === undefined) {
-            sendResponse(res, 400, { message: "User does not exist" });
-        } else {
-            deleteById(Number(id), function() {
-                sendResponse(res, 200, { message: "User deleted" });
-            }, function() {
-                sendResponse(res, 500, { message: "Failed to delete user" });
-            });
-        }
+    helper.authenticate(req, res, function() {
+        findById(Number(id), function(user) {
+            if (user === undefined) {
+                sendResponse(res, 400, { message: "User does not exist" });
+            } else if (req.decoded.userID == Number(id)) {
+                deleteById(Number(id), function() {
+                    sendResponse(res, 200, { message: "User deleted" });
+                }, function() {
+                    sendResponse(res, 500, { message: "Failed to delete user" });
+                });
+            } else {
+                sendResponse(res, 403, { message: "Unauthorized" });
+            }
+        });
     });
 };
 
-module.exports.update = function(id, user_changes, res) {
+module.exports.update = function(req, res) {
+    var id = req.params.id;
+    var user_changes = req.body;
+
     if (isNaN(id)) {
         sendResponse(res, 400, { message: "User id must be a number" });
         return;
     }
-    findById(Number(id), function(user) {
-        if (user === undefined) {
-            sendResponse(res, 400, { message: "User not found" });
-        } else {
-            validateUser(user_changes, function(errors) {
-                if (errors.length > 0) {
-                    sendResponse(res, 400, {
-                        message: "User data failed validation",
-                        errors: errors
-                    });
-                } else {
-                    user_changes.password = hashPassword(user_changes.password);
-                    update(user_changes, Number(id), function() {
-                        sendResponse(res, 200, {message: "User updated successfully"});
-                    }, function() {
-                        sendResponse(res, 500, {message: "Failed to update user"});
-                    });
-                }
-            });
-        }
+    helper.authenticate(req, res, function() {
+        findById(Number(id), function(user) {
+            if (user === undefined) {
+                sendResponse(res, 400, { message: "User not found" });
+            } else if (req.decoded.userID == Number(id)) {
+                validateUser(user_changes, function(errors) {
+                    if (errors.length > 0) {
+                        sendResponse(res, 400, {
+                            message: "User data failed validation",
+                            errors: errors
+                        });
+                    } else {
+                        user_changes.password = hashPassword(user_changes.password);
+                        update(user_changes, Number(id), function() {
+                            sendResponse(res, 200, {message: "User updated successfully"});
+                        }, function() {
+                            sendResponse(res, 500, {message: "Failed to update user"});
+                        });
+                    }
+                });
+            } else {
+                sendResponse(res, 403, { message: "Unauthorized" });
+            }
+        });
     });
 };
 
@@ -255,7 +267,7 @@ module.exports.getAuthentication = function(req, res){
     database.db.query(query,[user.email],function(err,rows){
         if (err) {
             console.log(query,err);
-            res.json({statusCode: 400, message: "DB error"})
+            sendResponse(res, 500, { message: "Failed to authorize." }); 
         } else if(rows.length == 0) {
             sendResponse(res, 400, {message: "Invalid email or password"});
         }
@@ -267,15 +279,11 @@ module.exports.getAuthentication = function(req, res){
                 }
                 else {
                     user.userID = rows[0].U_ID;
-                    var token = jwt.sign(user, 'superSecret', {
+                    var token = jwt.sign(user, helper.getSecret(), {
                         expiresIn: 14400 // expires in 24 hours
                     });
                     // return the information including token as JSON
-                    res.json({
-                        statusCode: 200,
-                        message: 'Enjoy your token!',
-                        token: token
-                    });
+                    sendResponse(res, 200, { message: 'Authorization successful', token: token });
                 }
             });
         }
