@@ -1,87 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html ng-app="ctp">
 <head>
     <meta charset="UTF-8">
     <title>Canadian Teachers Portal</title>
     <link rel="stylesheet" type="text/css" href="../stylesheets/style.css">
-
+    <script type="text/javascript" src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script type="text/javascript" src="../javascripts/app.js"></script>
 </head>
+
 <body>
 <div id="container">
-    <header>
-        <div id="sticky">
-            <p><a href="#">Login</a></p>
-            <p><a onclick = "signUp()" href="#">Sign Up</a></p>
-        </div>
-    </header>
-    <nav>
-        <ul>
-            <li class="selected"><a onclick = "goHome()" href="#">HOME</a></li>
-            <li><a onclick = "myDocuments()" href="#">My Documents</a></li>
-            <li><a href="about.html">ABOUT</a></li>
-            <li><a href="contact.html">CONTACT</a></li>
-        </ul>
-    </nav>
-
-    <div id="tableContainer">
-        <div id="tableRow">
-            <section id="documents">
-
-                <h2>Grades</h2>
-                <div class="dropdown">
-                    <a href="#">1-2</a>
-                    <div class="dropdown-content">
-                        <p><a onclick="print_str('grade one<br>')" href="#">1st Grade</a></p>
-                        <p><a onclick="print_str('grade two<br>')" href="#">2nd Grade</a></p>
-
-                    </div>
-                </div><br>
-                <div class="dropdown">
-                    <a href="#">3-5</a>
-                    <div class="dropdown-content">
-                        <p><a onclick="print_str('grade three<br>')" href="#">3rd Grade</a></p>
-                        <p><a onclick="print_str('grade four<br>')" href="#">4th Grade</a></p>
-                        <p><a onclick="print_str('grade five<br>')" href="#">5th Grade</a></p>
-                    </div>
-                </div>
-
-                <h2>Subject</h2>
-                <div class="dropdown">
-                    <a href="#">Math</a>
-                    <div class="dropdown-content">
-                        <p><a onclick="print_str('learn some arithmetic!<br>')" href="#">arithmetic</a></p>
-                        <p><a onclick="print_str('learn some fractions!<br>')" href="#">fractions</a></p>
-                        <p><a onclick="print_str('learn some decimals!<br>')" href="#">decimals</a></p>
-                    </div>
-                </div><br>
-
-                <div class="dropdown">
-                    <a href="#">Science</a>
-                    <div class="dropdown-content">
-                        <p><a onclick="print_str('learn some physics!<br>')" href="#">physics</a></p>
-                        <p><a onclick="print_str('learn some chem!<br>')" href="#">chemistry</a></p>
-                        <p><a onclick="print_str('learn some chem!<br>')" href="#">biology</a></p>
-                    </div>
-                </div>
-
-                <h2>Province</h2>
-                <p><a href="#">bc, ab, sask etc</a></p>
-            </section>
-            <section id="main">
-                <h1>Some great ..stuff!</h1>
-                <p>more stuff</p>
-                <p></p>
-
-            </section>
-        </div>
-    </div>
-    <footer>
-        &copy; 2016 CTP
-        <br>
-        All trademarks and registered trademarks appearing on
-        this site are the property of their respective owners.
-    </footer>
+    <main-tabs ng-controller="mainController as tab"></main-tabs>
+    <footer footer ng-show="true"></footer>
 </div>
-<script type="text/javascript" src="../javascripts/frontPage.js"></script>
 </body>
 </html>

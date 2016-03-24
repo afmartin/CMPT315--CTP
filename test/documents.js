@@ -5,13 +5,20 @@ var rest = require('restler');
 var assert = require('assert');
 var database = require('./../modules/database');
 var base_url = 'http://localhost:3000/api/v1/documents';
+var jwt = require('jsonwebtoken');
 
 var fs = require('fs');
 
 
 var testFile = '/ip.txt';
 
+var token;
+var id;
+
 suite('Documents', function() {
+
+    //var token;
+    //var id;
 
     test('Empty db', function(done) {
         database.dropTables(function() {
@@ -26,75 +33,75 @@ suite('Documents', function() {
         });
     });
 
-    test('Can not upload doc for invalid user', function(done){
-       rest.post(base_url + '/', {
-           data: {
-               grade: "2",
-               province: "AB",
-               OwnerId: 2000
-           }
-       }).on("complete", function(data){
-           assert.equal(data.statusCode, 500);
-       });
-        done();
+    test('Can get token for current user', function(done){
+        //first add a couple of users
+        rest.post('http://localhost:3000/api/v1/users/', {
+            data: {
+                email: "fake@gmail.com",
+                firstName: "Fake",
+                lastName: "Name",
+                password: "badPassword#1"
+            }
+        }).on('complete', function(data) {
+            rest.post('http://localhost:3000/api/v1/users/', {
+                data: {
+                    email: "anotherfake@gmail.com",
+                    firstName: "name",
+                    lastName: "fake",
+                    password: "badPassword#2"
+                }
+            }).on('complete', function (data) {
+                //get token for user (u_id = 1)
+                rest.post('http://localhost:3000/api/v1/users/authenticate', {
+                    data: {
+                        email: "fake@gmail.com",
+                        password: "badPassword#1"
+                    }
+                }).on("complete", function (data){
+                    token = data.token;
+                    decodeToken(token);
+                    assert.equal(data.statusCode, 200);
+                    done();
+                });
+            });
+        });
     });
 
+
     test('Can upload docs for valid user', function(done){
-        database.db.query("insert into USERS values(null, 'jake@some', '123', 'jake', 'bow', 'blahalbal')");
-        database.db.query("insert into USERS values(null, 'notauth@not', '445', 'bad', 'guy', 'imnotlogged in')");
         rest.post(base_url + '/', {
             multipart: true,
             data: {
                 grade: 2,
                 province: 'AB',
-                ownerID: 1,
+                token: token,
                 ul: rest.file(__dirname + testFile, null, 13, 'text/plain')
             }
-        }
-        ).on("complete", function(data){
-                rest.post(base_url + '/', {
-                        multipart: true,
-                        data: {
-                            grade: 2,
-                            province: 'AB',
-                            ownerID: 2,
-                            ul: rest.file(__dirname + testFile, null, 13, 'text/plain')
-                        }
-                    }
-                )
         }).on("complete", function(data){
             assert.equal(data.statusCode, 201);
             done();
-        })
+        });
     });
 
     test('Able to get a list of documents and detailed info about a specific document', function(done) {
         rest.get(base_url + '/').on('complete', function(data) {
             assert.equal(data.statusCode, 200);
-            rest.get(base_url + '/' + data.info[0].DOC_ID).on("complete", function(data){
+            rest.get(base_url + '/' + id,{data:{token:token}}).on("complete", function(data){
                 assert.equal(data.statusCode, 200);
                 done();
             });
         });
     });
 
-    // Note user 1 is "logged in" by default - until authentication is sorted out
-    test('Can not delete a document that DOES NOT belong to you', function(done){
-        rest.del(base_url + '/2').on('complete', function(data){
-            assert.equal(data.statusCode, 401);
-            done();
-        });
-    });
-
     test('Can modify a document that DOES belong to you', function(done){
-       rest.put(base_url + '/1?grade=1&province=BC').on('complete', function(data){
+       rest.put(base_url + '/' + id + '?grade=1&province=BC',{data:{token:token}}).on('complete', function(data){
            assert.equal(data.statusCode, 200);
            done();
        })
     });
 
     test('Can delete a document that DOES belong to you', function(done){
-        rest.del(base_url + '/1').on('complete', function(data){
+        rest.del(base_url + '/' + id ,{data:{token:token}}).on('complete', function(data){
             assert.equal(data.statusCode, 200);
             done();
         });
@@ -102,6 +109,8 @@ suite('Documents', function() {
 
     test('Clean up Docs dir', function(done){
         rmDir("docs", done);
+        decodeToken(token);
+
     });
 
     /** MORE TESTS WLL BE ADDED IN THE FUTURE**/
@@ -120,4 +129,9 @@ var rmDir = function(dirPath, callback) {
                 rmDir(filePath);
         }
     callback();
+};
+var decodeToken = function(token) {
+   jwt.verify(token, 'superSecret', function (err, decoded) {
+            id = decoded.userID;
+    });
 };
