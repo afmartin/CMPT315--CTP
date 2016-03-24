@@ -24,11 +24,11 @@ router.post('/', function(req, res) {
 });
 
 router.put('/:id', function (req, res) {
-    users.update(req.params.id, req.body, res);
+    users.update(req, res);
 });
 
 router.delete('/:id', function(req, res) {
-    users.delete(req.params.id, res);
+    users.delete(req, res);
 });
 
 router.post('/authenticate', function(req, res) {

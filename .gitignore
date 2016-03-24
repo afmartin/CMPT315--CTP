@@ -3,3 +3,4 @@ docs
 npm-debug.log
 node_modules
 db_config.json
+config.json

@@ -6,6 +6,7 @@ var assert = require('assert');
 var database = require('./../modules/database');
 var base_url = 'http://localhost:3000/api/v1/documents';
 var jwt = require('jsonwebtoken');
+var helper = require('../modules/helper.js');
 
 var fs = require('fs');
 
@@ -131,7 +132,7 @@ var rmDir = function(dirPath, callback) {
     callback();
 };
 var decodeToken = function(token) {
-   jwt.verify(token, 'superSecret', function (err, decoded) {
+   jwt.verify(token, helper.getSecret(), function (err, decoded) {
             id = decoded.userID;
     });
 };
