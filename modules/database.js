@@ -5,7 +5,7 @@ var json = JSON.parse(file);
 
 var environment = process.env.NODE_ENV;
 if (environment === 'dev')  environment = 'development';
-if (environment == undefined) environment = 'development';
+if (environment === undefined) environment = 'development';
 exports.db = mysql.createConnection(json[environment]);
 
 // The following database connection shouldn't be used anywhere else as it allows multiple statements
@@ -78,8 +78,11 @@ exports.createTables = function(callback) {
 };
 
 exports.dropTables = function(callback) {
-	query = " \
-	DROP TABLE IF EXISTS RATING, DOWNLOADS, COMMENTS, DOCUMENTS, USERS";
+	query = "DROP TABLE IF EXISTS RATING; \
+             DROP TABLE IF EXISTS DOWNLOADS; \
+             DROP TABLE IF EXISTS COMMENTS; \
+             DROP TABLE IF EXISTS DOCUMENTS; \
+             DROP TABLE IF EXISTS USERS";
 
 	database.query(query, function(err) {
 		if (err) throw err;
