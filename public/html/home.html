@@ -1,3 +1,8 @@
-<div>
-    <h1>this tab is HOME</h1>
+<div ng-controller="DocController as doc">
+    <div ng-repeat="info in doc.info.info">
+        <p class="preview">
+            {{info.title}}<br>{{info.province}}<br>{{info.subject}}<br>{{info.avgRating}}<br>
+            <img height="100" width="100" ng-src="{{info.previewPath}}"/>
+        </p>
+    </div>
 </div>

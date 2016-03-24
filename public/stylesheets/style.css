@@ -126,6 +126,7 @@ div#tableRow {
 }
 
 #main{
+    position: relative;
     background:        url("../images/tack.png") no-repeat top center #ffffff;
     display:           table-cell;
     padding:           15px;
@@ -178,4 +179,8 @@ footer {
 
 #docNav a:hover{
     cursor: pointer;
+}
+
+.preview{
+    text-align: left;
 }
