@@ -1,0 +1,29 @@
+<nav>
+    <ul>
+        <li ng-class="{active:tab.isSet(1) }">
+            <a href ng-click="tab.setTab(1)">HOME</a>
+        </li>
+        <li ng-class="{active:tab.isSet(2) }">
+            <a href ng-click="tab.setTab(2)">MY DOCUMENTS</a>
+        </li>
+        <li ng-class="{active:tab.isSet(3) }">
+            <a href ng-click="tab.setTab(3)">ABOUT</a>
+        </li>
+        <li ng-class="{active:tab.isSet(4) }">
+            <a href ng-click="tab.setTab(4)">CONTACT</a>
+        </li>
+    </ul>
+
+</nav>
+<div id="tableContainer">
+<div id="tableRow">
+    <sidebar id="documents"></sidebar>
+    <section id="main">
+        <home ng-show="tab.isSet(1)"></home>
+        <my-docs ng-show="tab.isSet(2)"></my-docs>
+        <about ng-show="tab.isSet(3)"></about>
+        <contact ng-show="tab.isSet(4)"></contact>
+    </section>
+
+</div>
+</div>
