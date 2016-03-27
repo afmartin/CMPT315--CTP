@@ -178,18 +178,29 @@ footer {
 }
 
 #docNav a:hover{
-    cursor: pointer;
+    cursor:           pointer;
 }
 
 .preview{
-    text-align: left;
+    text-align:       left;
 }
 
 .ng-invalid.ng-dirty{
-    border-color: red;
+    border-color:     red;
 
 }
-.ng-valid.ng-dirty{
+.ng-valid.ng-dirty {
     border-color: green;
+}
 
+.preview img{
+    float:       right;
+}
+
+.details{
+    text-align: left;
+}
+
+.details img{
+    float:     right;
 }
