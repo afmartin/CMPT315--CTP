@@ -35,13 +35,6 @@
         };
     });
 
-    app.directive("home", function() {
-        return {
-            restrict: 'E',
-            templateUrl: "../html/home.html"
-        };
-    });
-
     app.directive("contact", function() {
         return {
             restrict: 'E',

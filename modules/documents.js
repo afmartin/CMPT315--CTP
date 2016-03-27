@@ -97,7 +97,7 @@ exports.getDetailedInfo = function(req, res){
                 var previewPath = "http://localhost:3000/tmp/downloads/" + prev;
             }
 
-            database.db.query("select COMMENT from COMMENTS where DOC_ID=?", [req.params.id], function(er,r) {
+            database.db.query("select COMMENT, FIRST_NAME, LAST_NAME from COMMENTS as C, USERS as U where U.U_ID = C.OWNER and C.DOC_ID=?", [req.params.id], function(er,r) {
                 if(er){
                     return res.json(getRes("db", er.message));
                 }
@@ -303,7 +303,7 @@ function verifyPrivilege(req, res, callback){
 function getComments(rows){
     var arr = [];
     rows.map(function(row){
-        arr.push(row["COMMENT"]);
+        arr.push({comment:row["COMMENT"],firstName:row["FIRST_NAME"],lastName:row["LAST_NAME"]});
     });
     return arr;
 }
