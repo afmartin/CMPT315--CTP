@@ -271,7 +271,7 @@ module.exports.getAuthentication = function(req, res){
             console.log(query,err);
             sendResponse(res, 500, { message: "Failed to authorize." }); 
         } else if(rows.length == 0) {
-            sendResponse(res, 400, {message: "Invalid email or password"});
+            sendResponse(res, 400, {message: "Invalid email"});
         }
         else {
             bcrypt.compare(user.password, rows[0]["PASSWORD"], function (err, r) {
@@ -281,6 +281,7 @@ module.exports.getAuthentication = function(req, res){
                 }
                 else {
                     user.userID = rows[0].U_ID;
+                    user.password = null;
                     var token = jwt.sign(user, helper.getSecret(), {
                         expiresIn: 14400 // expires in 24 hours
                     });

@@ -5,7 +5,7 @@ var helper = require('./../modules/helper');
 var base_url = 'http://localhost:3000/api/v1/comments';
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
-var helper = require('../modules/helper.js');
+
 
 
 suite('Comments', function() {

@@ -1,4 +1,28 @@
-<section>
+ <section ng-controller="TabControl as subTab">
 
-    <h1>this tab is my documents</h1>
-</section>
+        <nav>
+            <ul>
+                <li ng-class="{active:subTab.isSet(1) }">
+                    <a href ng-click="subTab.setTab(1)">History</a>
+                </li>
+                <li ng-class="{active:subTab.isSet(2) }">
+                    <a href ng-click="subTab.setTab(2)">Upload</a>
+                </li>
+                <li ng-class="{active:subTab.isSet(3) }">
+                    <a href ng-click="subTab.setTab(3)">Downloads</a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+
+
+ <div>
+     <history ng-show="subTab.isSet(1)"></history>
+     <uploads ng-show="subTab.isSet(2)"></uploads>
+     <downloads ng-show="subTab.isSet(3)"></downloads>
+ </div>
+
+
+ </section>

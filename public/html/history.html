@@ -1,0 +1,8 @@
+ <div ng-controller="HistoryCtrl as his">
+     <div ng-repeat="document in his.docs">
+         <p class="preview">
+             {{document.title}}<br>{{document.province}}<br>{{document.subject}}<br>{{document.avgRating}}<br>
+             <img height="100" width="100" ng-src="{{document.previewPath}}"/>
+         </p>
+     </div>
+ </div>

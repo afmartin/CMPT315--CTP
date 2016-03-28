@@ -1,0 +1,66 @@
+<section>
+
+    <form name="upload" ng-controller="UploadCtrl as uploadCtrl" ng-submit="upload.$valid && uploadCtrl.addDoc()" novalidate>
+
+        File Description: <br>
+        <textarea type="text" name="fileDescription" rows="10" cols="30" ng-model="uploadCtrl.docs.fileDescription" class="form-control" required></textarea>
+
+        <p><input type="file" name="file" id="fileSelectorInput"  nv-file-select uploader="uploader"></p>
+
+        <p>GRADES</p>
+
+        <select class="form-control" name="grade" ng-model="uploadCtrl.docs.grade">
+            <option value="K">K</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select><br><br>
+
+        <p>Subject</p>
+
+        <select class="form-control" name="subject" ng-model="uploadCtrl.docs.subject">
+            <option value="Math">Math</option>
+            <option value="English">English</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="History">History</option>
+            <option value="Biology">Biology</option>
+            <option value="Science">Science</option>
+            <option value="Physics">Physics</option>
+            <option value="Music">Music</option>
+            <option value="Drama">Drama</option>
+            <option value="Other">Other</option>
+        </select><br><br>
+
+        <p>PROVINCE</p>
+
+        <select class="form-control" name="subject" ng-model="uploadCtrl.docs.province">
+            <option value="AB">AB</option>
+            <option value="BC">BC</option>
+            <option value="MB">MB</option>
+            <option value="NB">NB</option>
+            <option value="NL">NL</option>
+            <option value="NT">NT</option>
+            <option value="NS">NS</option>
+            <option value="NU">NU</option>
+            <option value="ON">ON</option>
+            <option value="PE">NB</option>
+            <option value="QC">QC</option>
+            <option value="SK">SK</option>
+            <option value="YT">YT</option>
+        </select><br><br>
+
+        <div>{{upload.$valid}}{{uploadCtrl.docs.fileDescription}}</div>
+        <input type="submit" class="form-control" value="Submit">
+
+    </form>
+
+</section>
