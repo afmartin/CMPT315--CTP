@@ -97,7 +97,7 @@ exports.getDetailedInfo = function(req, res){
                 var previewPath = "http://localhost:3000/tmp/downloads/" + prev;
             }
 
-            database.db.query("select COMMENT from COMMENTS where DOC_ID=?", [req.params.id], function(er,r) {
+            database.db.query("select COMMENT, FIRST_NAME, LAST_NAME from COMMENTS as C, USERS as U where U.U_ID = C.OWNER and C.DOC_ID=?", [req.params.id], function(er,r) {
                 if(er){
                     return res.json(getRes("db", er.message));
                 }
@@ -131,7 +131,9 @@ exports.uploadDoc = function(req, res){
             var ownerID = req.decoded.userID;
             var desc = req.body["fileDescription"];
             var title = req.files[0]["originalname"];
-            console.log(title);
+            var mime = req.files[0]["mimetype"];
+            console.log("mime" + mime);
+            console.log("title" + title);
 
             var ext;
             if (path.extname(title)) {
@@ -144,7 +146,7 @@ exports.uploadDoc = function(req, res){
             var prov = req.body.province;
             var subj = req.body.subject;
 
-            database.db.query("insert into DOCUMENTS values(null, '" + ownerID + "','" + ext + "','" + desc + "','" + title + "', null, null, '" +
+            database.db.query("insert into DOCUMENTS values(null, '" + ownerID + "','" + ext + "','" + mime + "','" + desc + "','" + title + "', null, null, '" +
                 prov + "', '" + grade + "','" + subj + "')", function (e) {
                 if (e) {
                     fs.unlink(docs + '/' + req.files[0].filename, function (er) {
@@ -303,7 +305,7 @@ function verifyPrivilege(req, res, callback){
 function getComments(rows){
     var arr = [];
     rows.map(function(row){
-        arr.push(row["COMMENT"]);
+        arr.push({comment:row["COMMENT"],firstName:row["FIRST_NAME"],lastName:row["LAST_NAME"]});
     });
     return arr;
 }
@@ -317,7 +319,8 @@ function getMoreInfo(rows){
             grade: row["GRADE"],
             province: row["PROVINCE"],
             avgRating: row["AVG_RATING"],
-            subject: row["SUBJECT"]
+            subject: row["SUBJECT"],
+            mime: row["MIME"]
         };
     });
 }

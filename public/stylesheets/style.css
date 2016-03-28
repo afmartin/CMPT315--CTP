@@ -184,3 +184,14 @@ footer {
 .preview{
     text-align: left;
 }
+.preview img{
+    float: right;
+}
+
+.details{
+    text-align: left;
+}
+
+.details img{
+    float:right;
+}
