@@ -131,7 +131,9 @@ exports.uploadDoc = function(req, res){
             var ownerID = req.decoded.userID;
             var desc = req.body["fileDescription"];
             var title = req.files[0]["originalname"];
-            console.log(title);
+            var mime = req.files[0]["mimetype"];
+            console.log("mime" + mime);
+            console.log("title" + title);
 
             var ext;
             if (path.extname(title)) {
@@ -144,7 +146,7 @@ exports.uploadDoc = function(req, res){
             var prov = req.body.province;
             var subj = req.body.subject;
 
-            database.db.query("insert into DOCUMENTS values(null, '" + ownerID + "','" + ext + "','" + desc + "','" + title + "', null, null, '" +
+            database.db.query("insert into DOCUMENTS values(null, '" + ownerID + "','" + ext + "','" + mime + "','" + desc + "','" + title + "', null, null, '" +
                 prov + "', '" + grade + "','" + subj + "')", function (e) {
                 if (e) {
                     fs.unlink(docs + '/' + req.files[0].filename, function (er) {
@@ -317,7 +319,8 @@ function getMoreInfo(rows){
             grade: row["GRADE"],
             province: row["PROVINCE"],
             avgRating: row["AVG_RATING"],
-            subject: row["SUBJECT"]
+            subject: row["SUBJECT"],
+            mime: row["MIME"]
         };
     });
 }

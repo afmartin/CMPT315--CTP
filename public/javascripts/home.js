@@ -1,8 +1,9 @@
 (function() {
-    var app = angular.module('home', ['ctp']);
+    var app = angular.module('home', ['ctp', 'ngFileSaver']);
     var docs;
     var token;
-    app.controller('DocController',['$http', function($http){
+
+    app.controller('DocController',['$http', 'FileSaver', 'Blob', function($http, FileSaver, Blob){
         docs = this;
         docs.info = [];
         docs.moreInfo = {};
@@ -18,12 +19,10 @@
 
         });
 
-
         docs.getDisplay = function(d){
             return d.display;
         };
 
-        //would be authenticating here so id would be extracted from the token
         docs.getMoreInfo = function(id){
             docs.clearAllPreviews();
             $http.get('./api/v1/documents/' + id + '?token=' + token).success(function (data) {
@@ -49,6 +48,14 @@
                 i.display = false;
             })
         };
+
+        docs.download = function(path, mime, name) {
+            $http.get(path, {responseType:'arraybuffer'}).success(function (data) {
+                var fi = new Blob([data], {type: mime + ';charset=utf-8'});
+                FileSaver.saveAs(fi, name);
+            });
+        };
+
     }]);
 
     app.directive("home", function() {
@@ -59,6 +66,8 @@
             controllerAs: "d"
         };
     });
+
+
 
 
 })();
