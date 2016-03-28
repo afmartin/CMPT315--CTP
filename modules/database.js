@@ -31,6 +31,7 @@ exports.createTables = function(callback) {
 	DOC_ID INTEGER NOT NULL AUTO_INCREMENT, \
 	OWNER_ID INTEGER, \
 	EXTENSIONS varchar(50) NOT NULL, \
+	MIME varchar(50) NOT NULL, \
 	DESCRIPTION varchar(50) NOT NULL, \
 	TITLE varchar(50) NOT NULL, \
 	PREVIEW varchar(10), \

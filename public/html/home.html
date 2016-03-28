@@ -19,6 +19,8 @@
     Average Rating: {{d.moreInfo.docData.avgRating}}<br>
     Description: {{d.moreInfo.docData.description}}<br>
 
+    <button type="button" ng-click="d.download(d.moreInfo.documentPath, d.moreInfo.docData.mime, d.moreInfo.docData.title)">Download</button><br>
+
     <h2>COMMENTS</h2>
     <p ng-repeat="c in d.moreInfo.comments">
         Comment: {{c.comment}}<br>
