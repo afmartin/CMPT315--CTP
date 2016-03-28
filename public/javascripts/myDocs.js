@@ -29,31 +29,37 @@
 
     }]);
 
-    app.controller('UploadCtrl',['$http','$log', function($http, $log){
+    app.controller('UploadCtrl',['$http','$log', function($scope, $http, $log){
         this.docs = {};
         var document = this.docs;
 
 
-        this.addDoc = function(){
+        this.addDoc = function() {
 
 
 
-            $http.post('./api/v1/users/authenticate',{email: 'newfake1@gmail.com', password: 'badPassword#1'}).then(function successCallback (response) {
-                console.log(response);
-                $http.post('./api/v1/documents', {fileDescription: document.fileDescription,token: response.data.token}).then(function successCallback (newresponse) {
+            $http.post('./api/v1/users/authenticate', {
+                    email: 'newfake1@gmail.com',
+                    password: 'badPassword#1'
+                }).then(function successCallback(response) {
+                        console.log(response);
+                        $http.post('./api/v1/documents', {
+                            fileDescription: document.fileDescription,
+                            token: response.data.token,
 
-                },function errorCallback(newresponse){
+                        }).then(function successCallback(newresponse) {
 
-                    console.log(newresponse);
-                });
-            },function errorCallback(response){
-                console.log(response);
-            }
+                        }, function errorCallback(newresponse) {
 
-            );
+                            console.log(newresponse);
+                        });
+                    }, function errorCallback(response) {
+                        console.log(response);
+                    }
+                );
+
 
         }
-
     }]);
 
     app.directive("history", function(){

@@ -2,7 +2,7 @@ var express = require('express');
 var path = require('path');
 var database = require('./database.js');
 var helper = require('./helper');
-//angular.codeschool.com need to look at
+
 //gets a specific comment
 module.exports.retrieveSpecific = function(req, res) {
     if(isNaN(req.params.cID)){
@@ -41,7 +41,6 @@ module.exports.retrieve = function(req, res) {
         var comment;
         var doc = req.query.docID;
         var owner = req.query.userID;
-        console.log(doc,owner,"hello world");
         if (doc != null && !isNaN(doc) ) {
             database.db.query("select * from COMMENTS where doc_id = (?);",[doc], function (err, rows) {
                 if (err) {
@@ -85,11 +84,11 @@ module.exports.create = function(req, res) {
 
     helper.authenticate(req, res, function() {
         var docID = req.body.docID;
-        var userID = req.body.userID;
+        var userID = req.decoded.userID;
         var comment = req.body.comment;
         var queryString = "insert into COMMENTS (doc_id, owner, comment) values (" + docID + ", " + userID + ", ? );";
 
-        if (req.body.docID == null || req.body.userID == null || req.body.comment == null) {
+        if (docID == null || userID == null || comment == null) {
             res.statusCode = 400;
             res.json({
                 statusCode: 400,
