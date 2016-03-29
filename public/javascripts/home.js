@@ -7,17 +7,20 @@
         docs = this;
         docs.info = [];
         docs.moreInfo = {};
-        $http.post('./api/v1/users/authenticate', {email:"fake@gmail.com",password:"badPassword#1" }).success(function(dat){
-            token = dat.token;
 
+        $http.post('./api/v1/users/authenticate', {email:"fake@gmail.com",password:"badPassword#1" }).then(function(res){
+            token = res.data.token;
             $http.get('./api/v1/documents').success(function (data) {
+                if(data.statusCode !== 200) {
+                    alert(JSON.stringify(data.statusCode + " " + data.message));
+                }
                 docs.info = data.info;
-                docs.info.forEach(function(i){
-                    i.display = true;
-                });
+                docs.setAllPreviews();
             });
-
+        }, function(res){
+            alert(JSON.stringify(res.data.statusCode + " " + res.data.message));
         });
+
 
         docs.getDisplay = function(d){
             return d.display;
@@ -25,9 +28,11 @@
 
         docs.getMoreInfo = function(id){
             docs.clearAllPreviews();
-            $http.get('./api/v1/documents/' + id + '?token=' + token).success(function (data) {
-                docs.moreInfo = data;
+            $http.get('./api/v1/documents/' + id + '?token=' + token).then(function (res) {
+                docs.moreInfo = res.data;
                 docs.moreInfo.display = true;
+            }, function(res){
+                alert(JSON.stringify(res.data.statusCode + " " + res.data.message))
             });
             docs.clearAllPreviews();
         };
@@ -43,19 +48,37 @@
             });
         };
 
+        docs.setAllPreviews = function(){
+            docs.info.forEach(function(i){
+                i.display = true;
+            })
+        };
+
         docs.clearAllPreviews = function(){
             docs.info.forEach(function(i){
                 i.display = false;
             })
         };
 
-        docs.download = function(path, mime, name) {
-            $http.get(path, {responseType:'arraybuffer'}).success(function (data) {
-                var fi = new Blob([data], {type: mime + ';charset=utf-8'});
-                FileSaver.saveAs(fi, name);
-            });
+        docs.back = function(){
+            docs.moreInfo.display = false;
+            docs.setAllPreviews();
         };
 
+
+        docs.download = function(path, mime, name, id) {
+            $http.get(path, {responseType:'arraybuffer'}).then(function (res) {
+                var fi = new Blob([res.data], {type: mime + ';charset=utf-8'});
+                FileSaver.saveAs(fi, name);
+                $http.post('./api/v1/downloads?token=' + token, {docID:id}).then(function(res){
+                    alert(JSON.stringify(res));
+                }, function(res){
+                    alert(JSON.stringify(res.data.statusCode + " " + res.data.message));
+                });
+            }, function(res){
+                alert(JSON.stringify(res.data.statusCode + " " + res.data.message));
+            });
+        };
     }]);
 
     app.directive("home", function() {
@@ -66,8 +89,4 @@
             controllerAs: "d"
         };
     });
-
-
-
-
 })();

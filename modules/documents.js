@@ -20,20 +20,24 @@ exports.deleteDoc = function(req, res){
                     if (er) {
                         return res.json(getRes("db", er.message));
                     }
-
                     fs.unlink("docs/" + docID + rows[0]["EXTENSIONS"], function (er) {
                         if (er) {
                             return res.json(getRes("fs", er.message));
                         }
+                        if (rows[0]["PREVIEW"] !== null) {
+                            fs.unlink("docs/" + docID + "_preview" + rows[0]["PREVIEW"], function (er) {
+                                if (er) {
+                                    return res.json(getRes("fs", er.message));
+                                }
+                                else {
+                                    return res.json(getRes("su"));
+                                }
+                            });
+                        }
+                        else {
+                            return res.json(getRes("su"));
+                        }
                     });
-                    if (rows[0]["PREVIEW"] !== null) {
-                        fs.unlink("docs/" + docID + "_preview" + rows[0]["PREVIEW"], function (er) {
-                            if (er) {
-                                return res.json(getRes("fs", er.message));
-                            }
-                        });
-                    }
-                    return res.json(getRes("su"));
                 });
             });
         });
@@ -129,7 +133,6 @@ exports.uploadDoc = function(req, res){
                 return res.json({statusCode: 500, message: "No file found"});
             }
             var ownerID = req.decoded.userID;
-            var desc = req.body["fileDescription"];
             var title = req.files[0]["originalname"];
             var mime = req.files[0]["mimetype"];
             console.log("mime" + mime);
@@ -142,6 +145,7 @@ exports.uploadDoc = function(req, res){
             else {
                 ext = '.txt';
             }
+            var desc = req.body.description;
             var grade = req.body.grade;
             var prov = req.body.province;
             var subj = req.body.subject;
@@ -313,6 +317,7 @@ function getComments(rows){
 function getMoreInfo(rows){
     return rows.map(function(row){
         return {
+            DOC_ID: row.DOC_ID,
             title: row["TITLE"],
             Owner: row["OWNER_ID"],
             description: row["DESCRIPTION"],
