@@ -67,7 +67,7 @@ exports.getSecret = function() {
 //https://scotch.io/tutorials/authenticate-a-node-js-api-with-json-web-tokens
 exports.authenticate = function (req,res,next){
 
-    var token = req.body.token || req.query.token || req.headers['x-access-token'];
+    var token = req.body.token || req.query.token || req.headers['x-access-token'] || req.headers.token;
 
     // decode token
     if (token) {

@@ -59,23 +59,25 @@ exports.getPreviewInfo = function(req, res){
         if(err){
             return res.json(getRes("db", err.message));
         }
-        if(rows.length === 0){
+        else if(rows.length === 0){
             return res.json(getRes("nr"));
         }
-
-        for(var i = 0; i < rows.length; i++){
-            if(rows[i]["preview"] == null) {
-                break;
+        else {
+            for (var i = 0; i < rows.length; i++) {
+                if (rows[i]["preview"] == null) {
+                    break;
+                }
+                else {
+                    rows[i].previewPath = "http://localhost:3000/tmp/downloads/" + rows[i].DOC_ID + "_preview" + rows[i].preview;
+                }
             }
-            else {
-                rows[i].previewPath = "http://localhost:3000/tmp/downloads/" + rows[i].DOC_ID + "_preview" + rows[i].preview;
-            }
+            res.statusCode = 200;
+            res.json({
+                statusCode: 200,
+                message: "Preview info",
+                info: getLessInfo(rows)
+            });
         }
-        res.json({
-            statusCode: 200,
-            message: "Preview info",
-            info: getLessInfo(rows)
-        });
     });
 };
 
@@ -129,7 +131,12 @@ exports.uploadDoc = function(req, res){
                 console.log(err.message);
                 return res.json(getRes("ul", err.message));
             }
-            if (req.files[0] === undefined) {
+            if (req.files === undefined) {
+                res.statusCode=500;
+                return res.json({statusCode: 500, message: "No file found"});
+            }
+            else if (req.files[0] === undefined) {
+                res.statusCode=500;
                 return res.json({statusCode: 500, message: "No file found"});
             }
             var ownerID = req.decoded.userID;
