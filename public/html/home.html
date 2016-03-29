@@ -1,4 +1,3 @@
-
 <div ng-repeat="info in d.info">
     <p class="preview" ng-show="d.getDisplay(info)">
         <img height="100" width="100" ng-src="{{info.previewPath}}"/><br>
@@ -19,12 +18,12 @@
     Average Rating: {{d.moreInfo.docData.avgRating}}<br>
     Description: {{d.moreInfo.docData.description}}<br>
 
-    <button type="button" ng-click="d.download(d.moreInfo.documentPath, d.moreInfo.docData.mime, d.moreInfo.docData.title)">Download</button><br>
+    <button type="button" ng-click="d.download(d.moreInfo.documentPath, d.moreInfo.docData.mime, d.moreInfo.docData.title, d.moreInfo.docData.DOC_ID)">Download</button><br>
 
     <h2>COMMENTS</h2>
     <p ng-repeat="c in d.moreInfo.comments">
         Comment: {{c.comment}}<br>
         User: {{c.firstName}} {{c.lastName}}
     </p>
+    <button type="button" ng-click="d.back()">Back to Search</button>
 </div>
-
