@@ -14,27 +14,33 @@ exports.deleteDoc = function(req, res){
             //cascading delete will take care of other tables
             database.db.query("select EXTENSIONS, PREVIEW from DOCUMENTS where DOC_ID=?", [docID], function(err, rows) {
                 if(err){
+                    res.statusCode = 500;
                     return res.json(getRes('db', err.message));
                 }
                 database.db.query("delete from DOCUMENTS where DOC_ID=?", [docID], function (er) {
                     if (er) {
+                        res.statusCode = 500;
                         return res.json(getRes("db", er.message));
                     }
                     fs.unlink("docs/" + docID + rows[0]["EXTENSIONS"], function (er) {
                         if (er) {
+                            res.statusCode = 500;
                             return res.json(getRes("fs", er.message));
                         }
                         if (rows[0]["PREVIEW"] !== null) {
                             fs.unlink("docs/" + docID + "_preview" + rows[0]["PREVIEW"], function (er) {
                                 if (er) {
+                                    res.statusCode = 500;
                                     return res.json(getRes("fs", er.message));
                                 }
                                 else {
+                                    res.statusCode = 200;
                                     return res.json(getRes("su"));
                                 }
                             });
                         }
                         else {
+                            res.statusCode = 200;
                             return res.json(getRes("su"));
                         }
                     });
@@ -57,22 +63,24 @@ exports.getPreviewInfo = function(req, res){
     }
     database.db.query(str,arr, function(err, rows){
         if(err){
+            res.statusCode = 500;
             return res.json(getRes("db", err.message));
         }
         else if(rows.length === 0){
+            res.statusCode = 404;
             return res.json(getRes("nr"));
         }
         else {
             for (var i = 0; i < rows.length; i++) {
                 if (rows[i]["preview"] == null) {
-                    break;
+                    continue;
                 }
                 else {
                     rows[i].previewPath = "http://localhost:3000/tmp/downloads/" + rows[i].DOC_ID + "_preview" + rows[i].preview;
                 }
             }
             res.statusCode = 200;
-            res.json({
+            return res.json({
                 statusCode: 200,
                 message: "Preview info",
                 info: getLessInfo(rows)
@@ -87,9 +95,11 @@ exports.getDetailedInfo = function(req, res){
         database.db.query("select * from DOCUMENTS where DOC_ID=?", [req.params.id], function(err, rows) {
             console.log(rows.length);
             if (err) {
+                res.statusCode = 500;
                 return res.json(getRes("db", err.message));
             }
             if (rows.length === 0) {
+                res.statusCode = 404;
                 return res.json(getRes("nr"));
             }
 
@@ -105,8 +115,10 @@ exports.getDetailedInfo = function(req, res){
 
             database.db.query("select COMMENT, FIRST_NAME, LAST_NAME from COMMENTS as C, USERS as U where U.U_ID = C.OWNER and C.DOC_ID=?", [req.params.id], function(er,r) {
                 if(er){
+                    res.statusCode = 500;
                     return res.json(getRes("db", er.message));
                 }
+                res.statusCode = 200;
                 return res.json({
                     statusCode: 200,
                     message: "Detailed info",
@@ -128,7 +140,7 @@ exports.uploadDoc = function(req, res){
     upload(req, res, function (err) {
         helper.authenticate(req, res, function() {
             if (err) {
-                console.log(err.message);
+                res.statusCode = 500;
                 return res.json(getRes("ul", err.message));
             }
             if (req.files === undefined) {
@@ -165,19 +177,24 @@ exports.uploadDoc = function(req, res){
                             console.log(er.message);
                         }
                     });
+                    res.statusCode = 500;
                     return res.json(getRes("db", e.message));
                 }
                 database.db.query("select MAX(DOC_ID) as newID from DOCUMENTS", function (err, rows) {
                     if (err) {
+                        res.statusCode = 500;
                         return res.json(getRes("db", err.message));
                     }
                     if (rows.length === 0) {
+                        res.statusCode = 404;
                         return res.json(getRes("nr"));
                     }
                     fs.rename(docs + '/' + req.files[0].filename, docs + '/' + rows[0]["newID"] + ext, function (er) {
                         if (er) {
+                            res.statusCode = 500;
                             return res.json(getRes("fs", er.message));
                         }
+                        res.statusCode = 201;
                         return res.json({
                             statusCode: 201,
                             message: "Document upload successful",
@@ -196,9 +213,11 @@ exports.uploadPreviewImage = function(req, res) {
         verifyPrivilege(req, res, function (req, res) {
             upload(req, res, function (err) {
                 if (err) {
+                    res.statusCode = 500;
                     return res.json(getRes("ul"));
                 }
                 if (req.files[0] === undefined) {
+                    res.statusCode = 500;
                     return res.json({statusCode: 500, message: "No file found"});
                 }
                 var title = req.files[0].originalname;
@@ -213,19 +232,23 @@ exports.uploadPreviewImage = function(req, res) {
                         console.log("Deleting existing preview");
                         fs.unlink(newName, function (er) {
                             if (er) {
+                                res.statusCode = 500;
                                 return res.json(getRes("fs", er.message));
                             }
                         });
                     }
                     database.db.query("update DOCUMENTS set PREVIEW=? where DOC_ID=?", [path.extname(title), req.params.id], function (err) {
                         if (err) {
+                            res.statusCode = 500;
                             return res.json(getRes("db", err.message));
                         }
                     });
                     fs.rename(docs + '/' + req.files[0].filename, newName, function (err) {
                         if (err) {
+                            res.statusCode = 500;
                             return res.json(getRes("fs", err.message));
                         }
+                        res.statusCode = 200;
                         return res.json(getRes("su"));
                     });
 
@@ -245,6 +268,7 @@ exports.updateDoc = function(req, res){
                     var p = q.toUpperCase();
                     if (p === 'EXTENSIONS' || p === "PREVIEW"
                         || p === 'OWNER_ID' || p === 'DOC_ID') {
+                        res.statusCode = 500;
                         return res.json({
                             statusCode: 500,
                             message: "You can not update the field: " + p
@@ -261,8 +285,10 @@ exports.updateDoc = function(req, res){
 
             database.db.query(str, arr, function (err) {
                 if (err) {
+                    res.statusCode = 500;
                     return res.json(getRes("db", err.message));
                 }
+                res.statusCode = 200;
                 return res.json(getRes("su"));
             });
         });
@@ -270,6 +296,7 @@ exports.updateDoc = function(req, res){
 };
 
 exports.notSupported = function(req, res){
+    res.statusCode = 500;
     res.json({
         statusCode: 500,
         message: "This operation is not supported"
