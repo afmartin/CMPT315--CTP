@@ -74,18 +74,28 @@
         };
 
         //comment handling----------------------------
-        this.addComment = function(id){
+        this.addComment = function(){
             docs.comment;
-            console.log(token);
-            $http({method:'POST', url: './api/v1/comments',headers: {'token': token},body:{docID: id, comment: docs.comment} }).success(function(data){
+            console.log(token, docs.comment);
+            $http({method:'POST', url: './api/v1/comments',headers: {'token': token},data:{docID: docs.id, comment: docs.comment} }).then(function(data){
                 console.log("yay");
+                docs.displayCommentForm = false;
+                delete docs.comment;
+                docs.setAllPreviews();
+                alert("Comment added succesfully!!");
             });
         };
 
-        this.displayAddCommentForm = function(){
+        this.displayAddCommentForm = function(id){
+            docs.filter("DOC_ID",id);
             docs.displayCommentForm = true;
-            console.log(docs.displayCommentForm);
+            docs.id=id;
+            console.log(docs.displayCommentForm,docs.id);
         };
+
+
+
+
 
     }]);
 

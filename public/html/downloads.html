@@ -10,7 +10,7 @@
         Subject: {{document.SUBJECT}}<br>
         Average Rating: {{document.AVGRATING}}<br>
         <button type="button" ng-click="downloadCtrl.getMoreInfo(document.DOC_ID)">More Info</button>
-        <button type="button" ng-click="downloadCtrl.displayAddCommentForm()">Add Comment</button>
+        <button type="button" ng-click="downloadCtrl.displayAddCommentForm(document.DOC_ID)">Add Comment</button>
     </p>
     </div>
     <div class="details" ng-show="downloadCtrl.moreInfo.display">
