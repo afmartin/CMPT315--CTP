@@ -19,27 +19,34 @@
         docs.info = [];
         docs.moreInfo = {};
 
-        $http.post('./api/v1/users/authenticate', {email:"newfake1@gmail.com",password:"badPassword#1" }).success(function(dat,docs){
-            var token = dat.token;
-            $http({method:'GET', url: './api/v1/downloads',headers: {'token': token} }).then(function successCallback(response) {
-                console.log(response.data);
-                docs.info = response.data;
+        $http.post('./api/v1/users/authenticate', {email:"newfake1@gmail.com",password:"badPassword#1" }).then(function(res){
+            token = res.data.token;
+            console.log(res);
+            $http({method:'GET', url: './api/v1/downloads',headers: {'token': token} }).success(function(data){
 
+                docs.info = data.downloads;
+                console.log(docs.info);
+                docs.setAllPreviews();
 
                 });
             });
-
-
 
         docs.getDisplay = function(d){
             return d.display;
         };
 
+        docs.setAllPreviews = function(){
+            docs.info.forEach(function(i){
+                i.display = true;
+            })
+        };
+
         docs.getMoreInfo = function(id){
             docs.clearAllPreviews();
-            $http.get('./api/v1/documents/' + id + '?token=' + token).success(function (data) {
+            $http({method:'GET', url: './api/v1/downloads',headers: {'token': token} }).success(function(data){
                 docs.moreInfo = data;
                 docs.moreInfo.display = true;
+                console.log(data);
             });
             docs.clearAllPreviews();
         };
@@ -59,6 +66,25 @@
             docs.info.forEach(function(i){
                 i.display = false;
             })
+        };
+
+        docs.back = function(){
+            docs.moreInfo.display = false;
+            docs.setAllPreviews();
+        };
+
+        //comment handling----------------------------
+        this.addComment = function(id){
+            docs.comment;
+            console.log(token);
+            $http({method:'POST', url: './api/v1/comments',headers: {'token': token},body:{docID: id, comment: docs.comment} }).success(function(data){
+                console.log("yay");
+            });
+        };
+
+        this.displayAddCommentForm = function(){
+            docs.displayCommentForm = true;
+            console.log(docs.displayCommentForm);
         };
 
     }]);
@@ -102,8 +128,6 @@
                 );
         };
     }]);
-
-
 
 
     app.directive("history", function(){
