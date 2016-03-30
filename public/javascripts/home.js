@@ -71,7 +71,6 @@
                 var fi = new Blob([res.data], {type: mime + ';charset=utf-8'});
                 FileSaver.saveAs(fi, name);
                 $http.post('./api/v1/downloads?token=' + token, {docID:id}).then(function(res){
-                    alert(JSON.stringify(res));
                 }, function(res){
                     alert(JSON.stringify(res.data.statusCode + " " + res.data.message));
                 });
