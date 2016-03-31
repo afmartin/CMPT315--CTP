@@ -15,17 +15,19 @@
     </div>
     <div class="details" ng-show="downloadCtrl.moreInfo.display">
         <img height="100" width="100" ng-src="{{downloadCtrl.moreInfo.previewPath}}"/><br>
-        Title: {{downloadCtrl.moreInfo.docData.title}}<br>
-        Province: {{downloadCtrl.moreInfo.docData.province}}<br>
-        Grade: {{downloadCtrl.moreInfo.docData.grade}}<br>
-        Subject: {{downloadCtrl.moreInfo.docData.subject}}<br>
-        Average Rating: {{downloadCtrl.moreInfo.docData.avgRating}}<br>
-        Description: {{downloadCtrl.moreInfo.docData.description}}<br>
+        Title: {{downloadCtrl.moreInfo.TITLE}}<br>
+        Province: {{downloadCtrl.moreInfo.PROVINCE}}<br>
+        Grade: {{downloadCtrl.moreInfo.GRADE}}<br>
+        Subject: {{downloadCtrl.moreInfo.SUBJECT}}<br>
+        Average Rating: {{downloadCtrl.moreInfo.AVGRATING}}<br>
+        Description: {{downloadCtrl.moreInfo.DESCRIPTION}}<br>
 
-        <h2>COMMENTS</h2>
-        <p ng-repeat="c in downloadCtrl.moreInfo.comments">
-            Comment: {{c.comment}}<br>
-            User: {{c.firstName}} {{c.lastName}}
+        <h2>Your Comments</h2>
+        <p ng-repeat="c in downloadCtrl.moreInfo.comments" >
+            <block ng-show="c.display">
+            Comment: {{c.COMMENT}}
+           <br> <button type="button" ng-click="downloadCtrl.updateCommentForm(c.COMMENT_ID)">Update Comment</button><br>
+            </block>
         </p>
         <button type="button" ng-click="downloadCtrl.back()">Back to Search</button>
 
@@ -36,6 +38,7 @@
 
             <textarea type="text" name="Comment" rows="10" cols="30" ng-model="downloadCtrl.comment" class="form-control" required></textarea>
 
+            <button type="button" ng-click="downloadCtrl.cancelCommentForm()">Cancel</button>
             <input type="submit" class="form-control" value="Submit">
 
 

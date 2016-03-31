@@ -18,7 +18,7 @@
         var docs = this;
         docs.info = [];
         docs.moreInfo = {};
-
+        docs.me;
         $http.post('./api/v1/users/authenticate', {email:"newfake1@gmail.com",password:"badPassword#1" }).then(function(res){
             token = res.data.token;
             console.log(res);
@@ -29,7 +29,13 @@
                 docs.setAllPreviews();
 
                 });
+
+            $http({method:'POST', url: './api/v1/users/whoami',headers: {'token': token} }).then(function(res) {
+                docs.me = res.data.user.id;
             });
+        });
+
+
 
         docs.getDisplay = function(d){
             return d.display;
@@ -43,10 +49,32 @@
 
         docs.getMoreInfo = function(id){
             docs.clearAllPreviews();
-            $http({method:'GET', url: './api/v1/downloads',headers: {'token': token} }).success(function(data){
-                docs.moreInfo = data;
-                docs.moreInfo.display = true;
+            var id=id;
+            $http({method:'GET', url: './api/v1/downloads',headers: {'token': token} }).then(function(data){
                 console.log(data);
+                data.data.downloads.forEach(function(obj){
+                    if(obj.DOC_ID==id){
+                        docs.moreInfo=obj;
+                    }
+                });
+                docs.moreInfo.display = true;
+                console.log("owner",docs.moreInfo.OWNER_ID);
+                $http({method:'GET', url: './api/v1/comments?docID='+docs.moreInfo.DOC_ID,headers: {'token': token} }).then(function(dat){
+                    console.log(dat.data.comments);
+
+                    docs.moreInfo.comments= dat.data.comments;
+
+                    docs.moreInfo.comments.forEach(function(obj){
+                        console.log(obj.OWNER);
+                        if(obj.OWNER == docs.me){
+                            obj.display=true;
+                            console.log("hi",obj);
+                        }
+                        else obj.display=false;
+                    });
+
+                });
+                console.log("this is docs info",docs.moreInfo);
             });
             docs.clearAllPreviews();
         };
@@ -93,9 +121,11 @@
             console.log(docs.displayCommentForm,docs.id);
         };
 
+        this.cancelCommentForm = function() {
+            docs.displayCommentForm = false;
+            docs.setAllPreviews();
 
-
-
+        };
 
     }]);
 
