@@ -39,9 +39,9 @@ div#container {
 
 #sticky {
     background:        url("../images/sticky.png") no-repeat;
-    width:             79px;
+    width:             119px;
     height:            80px;
-    padding:           30px 30px 30px 30px;
+    padding:           30px 10px 30px 10px;
     margin-left:       auto;
     text-align:        center;
     font-size:         1.2em;
@@ -57,6 +57,21 @@ div#container {
 
 #sticky a:hover {
     color:             #AAB9DE;
+}
+
+#sticky input {
+    width:90px;
+}
+
+#sticky input[type=button], #sticky input[type=submit] {
+    width: 50px;
+    display: inline;
+}
+
+#sticky .res {
+    font-weight: bold;
+    color: red;
+    font-size: xx-small;
 }
 
 header {
