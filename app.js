@@ -11,6 +11,7 @@ var ratings = require('./routes/ratings');
 var comments = require('./routes/comments');
 var downloads = require('./routes/downloads');
 var documents = require('./routes/documents');
+var contact = require('./routes/contact');
 var app = express();
 
 // view engine setup
@@ -37,6 +38,7 @@ app.use('/api/v1/comments', comments);
 app.use('/api/v1/ratings', ratings);
 app.use('/api/v1/documents', documents);
 app.use('/api/v1/downloads', downloads);
+app.use('/api/v1/contact', contact);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
