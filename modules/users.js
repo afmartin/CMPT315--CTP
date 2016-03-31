@@ -254,6 +254,13 @@ module.exports.update = function(req, res) {
     });
 };
 
+module.exports.whoami = function(req, res) {
+    helper.authenticate(req, res, function() {
+        var id = req.decoded.userID;
+        module.exports.retrieveSpecific(id, res);
+    });
+};
+
 
 module.exports.getAuthentication = function(req, res){
     if(req.body.email == undefined || req.body.password == undefined){
