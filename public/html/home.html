@@ -10,7 +10,12 @@
     </p>
 </div>
 <div class="details" ng-show="d.moreInfo.display">
+    <div class="details-dropdown">
     <img height="100" width="100" ng-src="{{d.moreInfo.previewPath}}"/><br>
+        <div class="details-dropdown-content">
+            <img height="350" width="350" ng-src="{{d.moreInfo.previewPath}}"/><br>
+        </div>
+    </div>
     Title: {{d.moreInfo.docData.title}}<br>
     Province: {{d.moreInfo.docData.province}}<br>
     Grade: {{d.moreInfo.docData.grade}}<br>

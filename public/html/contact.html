@@ -1,3 +1,17 @@
-<section>
-    <h1>this tab is contact</h1>
-</section>
+ <div>
+            <form name="contactForm" data-ng-submit="c.sendMail()">
+               <p>
+                    <label>Name: </label>
+                    <input type="text" data-ng-model="c.contactName"><br>
+               </p>
+                <p>
+                    <label>Email: </label>
+                    <input type="email" data-ng-model="c.contactEmail"><br>
+                </p>
+                <p>Message</p>
+                <p>
+                    <textarea data-ng-model="c.contactMsg" rows="10" cols="30"></textarea><br>
+                </p>
+                <input type="submit"></input>
+            </form>
+ </div>
