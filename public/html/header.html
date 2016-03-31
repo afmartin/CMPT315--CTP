@@ -1,4 +1,20 @@
-<div id="sticky">
-    <p><a href="#">Login</a></p>
-    <p><a href ng-click="tab.setTab(5)">Sign Up</a></p>
+<div ng-controller="AuthController as loginCtrl" id="sticky">
+    <div ng-show="showLogin && !logged">
+        <span class="res">{{ response }}</span>
+        <form novalidate>
+            <input type="email" placeholder="Email" ng-model="user.email" required/>
+            <input type="password" placeholder="Password" ng-model="user.password" required/>
+            <input type="submit" ng-click="login()" />
+            <input type="button" value="Cancel" ng-click="hideLogin()"/>
+        </form>
+    </div>
+    <div ng-show="!showLogin && !logged">
+        <p><a href ng-click="showLogin = true">Login</a></p>
+        <p><a href ng-click="tab.setTab(5)">Sign Up</a></p>
+    </div>
+    <div ng-show="logged">
+        <p>Hello, {{ currentUser.firstName }}</p>
+        <p><a href ng-click="">Profile</a></p>
+        <p><a href ng-click="logout()">Log Out</a></p>
+    </div>
 </div>
