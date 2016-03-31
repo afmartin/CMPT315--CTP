@@ -114,7 +114,6 @@
             docs.filter("DOC_ID",id);
             docs.displayCommentForm = true;
             docs.id=id;
-            console.log(docs.displayCommentForm,docs.id);
         };
 
         this.cancelCommentForm = function() {
@@ -126,16 +125,18 @@
         this.updateComment = function(comment){
             console.log(comment);
             $http({method:'PUT', url: './api/v1/comments/'+comment.COMMENT_ID,headers: {'token': token},data:{docID: comment.DOC_ID, comment: comment.COMMENT, userID: comment.OWNER} }).then(function(data){
-                console.log('success',data);
-
+                alert("Comment updated succesfully!!");
             });
 
         };
 
         this.deleteComment = function(comment){
             $http({method:'DELETE', url: './api/v1/comments/'+comment.COMMENT_ID,headers: {'token': token},data:{ userID: comment.OWNER} }).then(function(data){
-                console.log('delete success');
+                docs.clearAllPreviews();
+                docs.moreInfo.display = false;
+                docs.getMoreInfo(comment.DOC_ID);
 
+                alert("Comment deleted succesfully!!");
             });
         };
 
@@ -143,12 +144,69 @@
 
     app.controller('HistoryCtrl',['$http', function($http){
         var hist = this;
-        hist.docs = [];
+        hist.info = [];
+        hist.me;
+        hist.moreInfo = {};
+        $http.post('./api/v1/users/authenticate', {email:"newfake1@gmail.com",password:"badPassword#1" }).then(function(resp) {
+            token = resp.data.token;
+            $http({method:'POST', url: './api/v1/users/whoami',headers: {'token': token} }).then(function(res) {
+                hist.me = res.data.user.id;
+                $http({
+                    method: 'GET',
+                    url: './api/v1/documents?OWNER_ID=' + hist.me,
+                    headers: {'token': token}
+                }).then(function (data) {
+                    hist.info = data.data.info;
+                    hist.setAllPreviews();
+                },function(err){console.log(err)});
 
-
-        $http.get('./api/v1/documents?owner_id=1').success(function (data) {
-            hist.docs = data.info;
+            });
         });
+
+        hist.getMoreInfo = function(id){
+            hist.clearAllPreviews();
+            $http.get('./api/v1/documents/' + id + '?token=' + token).then(function (res) {
+                hist.moreInfo = res.data;
+                hist.moreInfo.display = true;
+            }, function(res){
+                alert(JSON.stringify(res.data.statusCode + " " + res.data.message))
+            });
+            hist.clearAllPreviews();
+        };
+
+        hist.filter=function(atr, val){
+            hist.info.forEach(function(i){
+                if(i[atr] === val){
+                    i.display = true;
+                }
+                else {
+                    i.display = false;
+                }
+            });
+        };
+
+        hist.clearAllPreviews = function(){
+            hist.info.forEach(function(i){
+                i.display = false;
+            })
+        };
+
+        hist.back = function(){
+            hist.moreInfo.display = false;
+            hist.setAllPreviews();
+        };
+
+        hist.getDisplay = function(d){
+            return d.display;
+        };
+
+        hist.setAllPreviews = function(){
+            hist.info.forEach(function(i){
+                i.display = true;
+            })
+        };
+
+
     }]);
 
     app.controller('UploadCtrl',['$http','FileUploader','$log', function($http, FileUploader, $log){
@@ -173,8 +231,8 @@
                         uploads.headers = {token: response.data.token};
                         uploads.addToQueue(id='fileSelectorInput');
                         uploads.uploadAll();
+                        alert("File upload succesfully!!");
 
-                      //  alert(JSON.stringify(uploads.queue));
 
                     }
                 );
