@@ -19,6 +19,10 @@ router.get('/', function(req, res) {
     users.retrieve(conditions, res);
 });
 
+router.post('/whoami', function(req, res) {
+    users.whoami(req, res);
+});
+
 router.post('/', function(req, res) {
     users.create(req.body, res);
 });
