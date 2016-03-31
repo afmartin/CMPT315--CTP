@@ -25,9 +25,13 @@
         <h2>Your Comments</h2>
         <p ng-repeat="c in downloadCtrl.moreInfo.comments" >
             <block ng-show="c.display">
-            Comment: {{c.COMMENT}}
-           <br> <button type="button" ng-click="downloadCtrl.updateCommentForm(c.COMMENT_ID)">Update Comment</button><br>
+                Comment:<br>
+            <textarea  ng-model="c.COMMENT"> {{c.COMMENT}}</textarea>
+            <br> <button type="button" ng-click="downloadCtrl.updateComment(c)">Update Comment</button>
+                <button type="button" ng-click="downloadCtrl.deleteComment(c)">Delete Comment</button><br>
             </block>
+
+
         </p>
         <button type="button" ng-click="downloadCtrl.back()">Back to Search</button>
 

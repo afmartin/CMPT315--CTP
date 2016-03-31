@@ -65,16 +65,12 @@
                     docs.moreInfo.comments= dat.data.comments;
 
                     docs.moreInfo.comments.forEach(function(obj){
-                        console.log(obj.OWNER);
                         if(obj.OWNER == docs.me){
                             obj.display=true;
-                            console.log("hi",obj);
                         }
                         else obj.display=false;
                     });
-
                 });
-                console.log("this is docs info",docs.moreInfo);
             });
             docs.clearAllPreviews();
         };
@@ -125,6 +121,22 @@
             docs.displayCommentForm = false;
             docs.setAllPreviews();
 
+        };
+
+        this.updateComment = function(comment){
+            console.log(comment);
+            $http({method:'PUT', url: './api/v1/comments/'+comment.COMMENT_ID,headers: {'token': token},data:{docID: comment.DOC_ID, comment: comment.COMMENT, userID: comment.OWNER} }).then(function(data){
+                console.log('success',data);
+
+            });
+
+        };
+
+        this.deleteComment = function(comment){
+            $http({method:'DELETE', url: './api/v1/comments/'+comment.COMMENT_ID,headers: {'token': token},data:{ userID: comment.OWNER} }).then(function(data){
+                console.log('delete success');
+
+            });
         };
 
     }]);

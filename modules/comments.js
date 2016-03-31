@@ -41,7 +41,9 @@ module.exports.retrieve = function(req, res) {
         var comment;
         var doc = req.query.docID;
         var owner = req.query.userID;
+
         if (doc != null && !isNaN(doc) ) {
+
             database.db.query("select * from COMMENTS where doc_id = (?);",[doc], function (err, rows) {
                 if (err) {
                     res.statusCode = 400;
@@ -77,6 +79,13 @@ module.exports.retrieve = function(req, res) {
                 }
             });
         }
+        else{
+            res.statusCode = 400;
+            res.json({
+                statusCode: 400,
+                message: "proper info not included"
+            });
+        }
     });
 };
 
@@ -87,7 +96,7 @@ module.exports.create = function(req, res) {
         var userID = req.decoded.userID;
         var comment = req.body.comment;
         var queryString = "insert into COMMENTS (doc_id, owner, comment) values (" + docID + ", " + userID + ", ? );";
-
+        //console.log(decoded);
         if (docID == null || userID == null || comment == null) {
             res.statusCode = 400;
             res.json({
@@ -139,7 +148,7 @@ module.exports.update = function(req, res) {
             docID = Number(docID);
             userID = Number(userID);
 
-            database.db.query("update COMMENTS set comment = ? where COMMENTS.comment_id= ? ;", [cID,comment], function (err, rows) {
+            database.db.query("update COMMENTS set comment = ? where COMMENTS.comment_id= ? ;", [comment,cID], function (err, rows) {
                 if (err) {
                     res.statusCdoe= 400;
                     res.json({
