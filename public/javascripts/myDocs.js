@@ -167,6 +167,7 @@
             hist.clearAllPreviews();
             $http.get('./api/v1/documents/' + id + '?token=' + token).then(function (res) {
                 hist.moreInfo = res.data;
+                console.log(hist.moreInfo);
                 hist.moreInfo.display = true;
             }, function(res){
                 alert(JSON.stringify(res.data.statusCode + " " + res.data.message))
