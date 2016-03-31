@@ -18,16 +18,22 @@
         var docs = this;
         docs.info = [];
         docs.moreInfo = {};
+        docs.me;
+        $http.post('./api/v1/users/authenticate', {email:"newfake1@gmail.com",password:"badPassword#1" }).then(function(res){
+            token = res.data.token;
+            console.log(res);
+            $http({method:'GET', url: './api/v1/downloads',headers: {'token': token} }).success(function(data){
 
-        $http.post('./api/v1/users/authenticate', {email:"newfake1@gmail.com",password:"badPassword#1" }).success(function(dat,docs){
-            var token = dat.token;
-            $http({method:'GET', url: './api/v1/downloads',headers: {'token': token} }).then(function successCallback(response) {
-                console.log(response.data);
-                docs.info = response.data;
-
+                docs.info = data.downloads;
+                console.log(docs.info);
+                docs.setAllPreviews();
 
                 });
+
+            $http({method:'POST', url: './api/v1/users/whoami',headers: {'token': token} }).then(function(res) {
+                docs.me = res.data.user.id;
             });
+        });
 
 
 
@@ -35,11 +41,36 @@
             return d.display;
         };
 
+        docs.setAllPreviews = function(){
+            docs.info.forEach(function(i){
+                i.display = true;
+            })
+        };
+
         docs.getMoreInfo = function(id){
             docs.clearAllPreviews();
-            $http.get('./api/v1/documents/' + id + '?token=' + token).success(function (data) {
-                docs.moreInfo = data;
+            var id=id;
+            $http({method:'GET', url: './api/v1/downloads',headers: {'token': token} }).then(function(data){
+                console.log(data);
+                data.data.downloads.forEach(function(obj){
+                    if(obj.DOC_ID==id){
+                        docs.moreInfo=obj;
+                    }
+                });
                 docs.moreInfo.display = true;
+                console.log("owner",docs.moreInfo.OWNER_ID);
+                $http({method:'GET', url: './api/v1/comments?docID='+docs.moreInfo.DOC_ID,headers: {'token': token} }).then(function(dat){
+                    console.log(dat.data.comments);
+
+                    docs.moreInfo.comments= dat.data.comments;
+
+                    docs.moreInfo.comments.forEach(function(obj){
+                        if(obj.OWNER == docs.me){
+                            obj.display=true;
+                        }
+                        else obj.display=false;
+                    });
+                });
             });
             docs.clearAllPreviews();
         };
@@ -61,16 +92,122 @@
             })
         };
 
+        docs.back = function(){
+            docs.moreInfo.display = false;
+            docs.setAllPreviews();
+        };
+
+        //comment handling----------------------------
+        this.addComment = function(){
+            docs.comment;
+            console.log(token, docs.comment);
+            $http({method:'POST', url: './api/v1/comments',headers: {'token': token},data:{docID: docs.id, comment: docs.comment} }).then(function(data){
+                console.log("yay");
+                docs.displayCommentForm = false;
+                delete docs.comment;
+                docs.setAllPreviews();
+                alert("Comment added succesfully!!");
+            });
+        };
+
+        this.displayAddCommentForm = function(id){
+            docs.filter("DOC_ID",id);
+            docs.displayCommentForm = true;
+            docs.id=id;
+        };
+
+        this.cancelCommentForm = function() {
+            docs.displayCommentForm = false;
+            docs.setAllPreviews();
+
+        };
+
+        this.updateComment = function(comment){
+            console.log(comment);
+            $http({method:'PUT', url: './api/v1/comments/'+comment.COMMENT_ID,headers: {'token': token},data:{docID: comment.DOC_ID, comment: comment.COMMENT, userID: comment.OWNER} }).then(function(data){
+                alert("Comment updated succesfully!!");
+            });
+
+        };
+
+        this.deleteComment = function(comment){
+            $http({method:'DELETE', url: './api/v1/comments/'+comment.COMMENT_ID,headers: {'token': token},data:{ userID: comment.OWNER} }).then(function(data){
+                docs.clearAllPreviews();
+                docs.moreInfo.display = false;
+                docs.getMoreInfo(comment.DOC_ID);
+
+                alert("Comment deleted succesfully!!");
+            });
+        };
+
     }]);
 
     app.controller('HistoryCtrl',['$http', function($http){
         var hist = this;
-        hist.docs = [];
+        hist.info = [];
+        hist.me;
+        hist.moreInfo = {};
+        $http.post('./api/v1/users/authenticate', {email:"newfake1@gmail.com",password:"badPassword#1" }).then(function(resp) {
+            token = resp.data.token;
+            $http({method:'POST', url: './api/v1/users/whoami',headers: {'token': token} }).then(function(res) {
+                hist.me = res.data.user.id;
+                $http({
+                    method: 'GET',
+                    url: './api/v1/documents?OWNER_ID=' + hist.me,
+                    headers: {'token': token}
+                }).then(function (data) {
+                    hist.info = data.data.info;
+                    hist.setAllPreviews();
+                },function(err){console.log(err)});
 
-
-        $http.get('./api/v1/documents?owner_id=1').success(function (data) {
-            hist.docs = data.info;
+            });
         });
+
+        hist.getMoreInfo = function(id){
+            hist.clearAllPreviews();
+            $http.get('./api/v1/documents/' + id + '?token=' + token).then(function (res) {
+                hist.moreInfo = res.data;
+                console.log(hist.moreInfo);
+                hist.moreInfo.display = true;
+            }, function(res){
+                alert(JSON.stringify(res.data.statusCode + " " + res.data.message))
+            });
+            hist.clearAllPreviews();
+        };
+
+        hist.filter=function(atr, val){
+            hist.info.forEach(function(i){
+                if(i[atr] === val){
+                    i.display = true;
+                }
+                else {
+                    i.display = false;
+                }
+            });
+        };
+
+        hist.clearAllPreviews = function(){
+            hist.info.forEach(function(i){
+                i.display = false;
+            })
+        };
+
+        hist.back = function(){
+            hist.moreInfo.display = false;
+            hist.setAllPreviews();
+        };
+
+        hist.getDisplay = function(d){
+            return d.display;
+        };
+
+        hist.setAllPreviews = function(){
+            hist.info.forEach(function(i){
+                i.display = true;
+            })
+        };
+
+
     }]);
 
     app.controller('UploadCtrl',['$http','FileUploader','$log', function($http, FileUploader, $log){
@@ -95,15 +232,13 @@
                         uploads.headers = {token: response.data.token};
                         uploads.addToQueue(id='fileSelectorInput');
                         uploads.uploadAll();
+                        alert("File upload succesfully!!");
 
-                      //  alert(JSON.stringify(uploads.queue));
 
                     }
                 );
         };
     }]);
-
-
 
 
     app.directive("history", function(){

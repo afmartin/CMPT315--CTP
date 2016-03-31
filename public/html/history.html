@@ -1,8 +1,31 @@
  <div ng-controller="HistoryCtrl as his">
-     <div ng-repeat="document in his.docs">
-         <p class="preview">
-             {{document.title}}<br>{{document.province}}<br>{{document.subject}}<br>{{document.avgRating}}<br>
-             <img height="100" width="100" ng-src="{{document.previewPath}}"/>
-         </p>
-     </div>
+     <div ng-repeat="document in his.info">
+             <p class="preview" ng-show="his.getDisplay(document)">
+                 <img height="100" width="100" ng-src="{{info.previewPath}}"/><br>
+                 Title: {{document.title}}<br>
+                 Province: {{document.province}}<br>
+                 Grade: {{document.grade}}<br>
+                 Subject: {{document.subject}}<br>
+                 Average Rating: {{document.avgRating}}<br>
+                 <button type="button" ng-click="his.getMoreInfo(document.DOC_ID)">More Info</button><br>
+             </p>
+         </div>
+         <div class="details" ng-show="his.moreInfo.display">
+             <img height="100" width="100" ng-src="{{his.moreInfo.previewPath}}"/><br>
+             Title: {{his.moreInfo.docData.title}}<br>
+             Province: {{his.moreInfo.docData.province}}<br>
+             Grade: {{his.moreInfo.docData.grade}}<br>
+             Subject: {{his.moreInfo.docData.subject}}<br>
+             Average Rating: {{his.moreInfo.docData.avgRating}}<br>
+             Description: {{his.moreInfo.docData.description}}<br>
+
+
+             <h2>COMMENTS</h2>
+             <p ng-repeat="c in his.moreInfo.comments">
+                 Comment: {{c.comment}}<br>
+             </p>
+             <button type="button" ng-click="his.back()">Back to Search</button>
+         </div>
  </div>
+
+
