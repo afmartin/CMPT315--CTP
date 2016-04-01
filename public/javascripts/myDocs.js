@@ -1,18 +1,26 @@
 (function() {
     var app = angular.module('myDocs', ['angularFileUpload','ngCookies']);
     var token;
-    app.controller("TabControl", function(){
+    app.controller("TabControl",['$cookies', function($cookies){
         this.tab = 2;
 
         this.isSet = function(checkTab) {
+            if($cookies.get('token') !== undefined) {
+                token = $cookies.get('token');
+            };
             return this.tab === checkTab;
         };
 
         this.setTab = function(activeTab) {
+            if($cookies.get('token') !== undefined) {
+                token = $cookies.get('token');
+            };
             this.tab = activeTab;
         };
 
-    });
+
+
+    }]);
 
     app.controller("DownloadCtrl", ['$http', 'Blob','$cookies', function($http, Blob,$cookies){
         var docs = this;
@@ -20,17 +28,23 @@
         docs.moreInfo = {};
         docs.me;
 
-        if($cookies.get('token') !== undefined)token=$cookies.get('token');
 
-        $http({method:'GET', url: './api/v1/downloads',headers: {'token': token} }).success(function(data){
-            docs.info = data.downloads;
-            console.log(docs.info);
-            docs.setAllPreviews();
-        });
+        if($cookies.get('token') !== undefined) {
+            token = $cookies.get('token');
 
-        $http({method:'POST', url: './api/v1/users/whoami',headers: {'token': token} }).then(function(res) {
-            docs.me = res.data.user.id;
-        });
+            $http({method: 'POST', url: './api/v1/users/whoami', headers: {'token': token}}).then(function (res) {
+                docs.me = res.data.user.id;
+            });
+
+            $http({method: 'GET', url: './api/v1/downloads', headers: {'token': token}}).success(function (data) {
+                docs.info = data.downloads;
+                for(var i=0;i<docs.info.length;i++){
+                    docs.getYourRating(docs.info[i],docs.info[i].rating);
+                }
+                console.log(docs.info);
+                docs.setAllPreviews();
+            });
+        }
 
         docs.getDisplay = function(d){
             return d.display;
@@ -97,7 +111,6 @@
             docs.comment;
             console.log(token, docs.comment);
             $http({method:'POST', url: './api/v1/comments',headers: {'token': token},data:{docID: docs.id, comment: docs.comment} }).then(function(data){
-                console.log("yay");
                 docs.displayCommentForm = false;
                 delete docs.comment;
                 docs.setAllPreviews();
@@ -133,6 +146,38 @@
 
                 alert("Comment deleted succesfully!!");
             });
+        };
+
+        this.getYourRating = function (obj,rating){
+            var id = obj.DOC_ID;
+            $http({method:'GET', url: './api/v1/ratings',headers: {'token': token, docID: id} }).then(function(res) {
+                rating=res.data.rating[0].newrating;
+                for(var i=0;i<docs.info.length;i++){
+                    if(docs.info[i].DOC_ID==id){
+                        docs.info[i].rating=rating;
+                    }
+                }
+            });
+
+        };
+
+        this.rateDoc = function (doc_id){
+
+            var rating;
+            for(var i=0;i<docs.info.length;i++){
+                if(docs.info[i].DOC_ID==doc_id)rating=docs.info[i].rating;
+            }
+            $http({method:'POST', url: './api/v1/ratings/',headers: {'token': token}, data:{docID: doc_id, rating: rating}}).then(function(res) {
+               alert("rating created");
+            },function(){
+                $http({method:'PUT', url: './api/v1/ratings/',headers: {'token': token}, data:{docID: doc_id, rating: rating}}).then(function(res){
+                    alert("rating updated");
+                },function(err){console.log(err);});
+
+            });
+
+
+
         };
 
     }]);
@@ -209,7 +254,6 @@
         this.docs = {};
         var test = 'home.html';
         var document = this.docs;
-        console.log("be4",document);
         if($cookies.get('token') !== undefined)token=$cookies.get('token');
         this.uploader = new FileUploader({url: "http://localhost:3000/api/v1/documents", headers: {token: token}, });
         var uploads = this.uploader;
@@ -220,9 +264,14 @@
             var item = uploads.queue[0];
             item.formData.push(document);
             uploads.uploadAll();
-            alert("File upload succesfully!!");
+            if(item.isSuccess){
+                alert("File upload succesfully!!");
+                document = {};
+                console.log(document);
+            }
         };
     }]);
+
 
 
     app.directive("history", function(){
