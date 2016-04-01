@@ -1,6 +1,6 @@
 (function() {
-    var app = angular.module('myDocs', ['angularFileUpload']);
-
+    var app = angular.module('myDocs', ['angularFileUpload','ngCookies']);
+    var token;
     app.controller("TabControl", function(){
         this.tab = 2;
 
@@ -14,28 +14,23 @@
 
     });
 
-    app.controller("DownloadCtrl", ['$http', 'Blob', function($http, Blob){
+    app.controller("DownloadCtrl", ['$http', 'Blob','$cookies', function($http, Blob,$cookies){
         var docs = this;
         docs.info = [];
         docs.moreInfo = {};
         docs.me;
-        $http.post('./api/v1/users/authenticate', {email:"newfake1@gmail.com",password:"badPassword#1" }).then(function(res){
-            token = res.data.token;
-            console.log(res);
-            $http({method:'GET', url: './api/v1/downloads',headers: {'token': token} }).success(function(data){
 
-                docs.info = data.downloads;
-                console.log(docs.info);
-                docs.setAllPreviews();
+        if($cookies.get('token') !== undefined)token=$cookies.get('token');
 
-                });
-
-            $http({method:'POST', url: './api/v1/users/whoami',headers: {'token': token} }).then(function(res) {
-                docs.me = res.data.user.id;
-            });
+        $http({method:'GET', url: './api/v1/downloads',headers: {'token': token} }).success(function(data){
+            docs.info = data.downloads;
+            console.log(docs.info);
+            docs.setAllPreviews();
         });
 
-
+        $http({method:'POST', url: './api/v1/users/whoami',headers: {'token': token} }).then(function(res) {
+            docs.me = res.data.user.id;
+        });
 
         docs.getDisplay = function(d){
             return d.display;
@@ -142,26 +137,26 @@
 
     }]);
 
-    app.controller('HistoryCtrl',['$http', function($http){
+    app.controller('HistoryCtrl',['$http','$cookies', function($http,$cookies){
         var hist = this;
         hist.info = [];
         hist.me;
         hist.moreInfo = {};
-        $http.post('./api/v1/users/authenticate', {email:"newfake1@gmail.com",password:"badPassword#1" }).then(function(resp) {
-            token = resp.data.token;
-            $http({method:'POST', url: './api/v1/users/whoami',headers: {'token': token} }).then(function(res) {
-                hist.me = res.data.user.id;
-                $http({
-                    method: 'GET',
-                    url: './api/v1/documents?OWNER_ID=' + hist.me,
-                    headers: {'token': token}
-                }).then(function (data) {
-                    hist.info = data.data.info;
-                    hist.setAllPreviews();
-                },function(err){console.log(err)});
 
-            });
+        if($cookies.get('token') !== undefined)token=$cookies.get('token');
+
+        $http({method:'POST', url: './api/v1/users/whoami',headers: {'token': token} }).then(function(res) {
+            hist.me = res.data.user.id;
+            $http({
+                method: 'GET',
+                url: './api/v1/documents?OWNER_ID=' + hist.me,
+                headers: {'token': token}
+            }).then(function (data) {
+                hist.info = data.data.info;
+                hist.setAllPreviews();
+            },function(err){console.log(err)});
         });
+
 
         hist.getMoreInfo = function(id){
             hist.clearAllPreviews();
@@ -210,33 +205,22 @@
 
     }]);
 
-    app.controller('UploadCtrl',['$http','FileUploader','$log', function($http, FileUploader, $log){
+    app.controller('UploadCtrl',['$http','FileUploader','$log','$cookies', function($http, FileUploader, $log,$cookies){
         this.docs = {};
         var test = 'home.html';
         var document = this.docs;
-        var token;
-        this.uploader = new FileUploader({url: "http://localhost:3000/api/v1/documents", headers: {token:"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5ld2Zha2UxQGdtYWlsLmNvbSIsInBhc3N3b3JkIjpudWxsLCJ1c2VySUQiOjEsImlhdCI6MTQ1OTI5MTM1NSwiZXhwIjoxNDU5MzA1NzU1fQ.7pRBriN9bySA7IlEioDScOhwyywCnEb56DIPfuT9khg"}});
+        console.log("be4",document);
+        if($cookies.get('token') !== undefined)token=$cookies.get('token');
+        this.uploader = new FileUploader({url: "http://localhost:3000/api/v1/documents", headers: {token: token}, });
         var uploads = this.uploader;
 
         //this.uploader.testFile = test;
         //alert(JSON.stringify(uploads));
         this.addDoc = function() {
-
-            $http.post('./api/v1/users/authenticate', {
-                    email: 'newfake1@gmail.com',
-                    password: 'badPassword#1'
-                }).then(function successCallback(response) {
-                        console.log(response);
-
-                        uploads.formData = document;
-                        uploads.headers = {token: response.data.token};
-                        uploads.addToQueue(id='fileSelectorInput');
-                        uploads.uploadAll();
-                        alert("File upload succesfully!!");
-
-
-                    }
-                );
+            var item = uploads.queue[0];
+            item.formData.push(document);
+            uploads.uploadAll();
+            alert("File upload succesfully!!");
         };
     }]);
 

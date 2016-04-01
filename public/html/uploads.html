@@ -3,7 +3,7 @@
     <form name="upload" ng-controller="UploadCtrl as uploadCtrl" enctype="multipart/form-data" ng-submit="upload.$valid && uploadCtrl.addDoc()" novalidate>
 
         File Description: <br>
-        <textarea type="text" name="fileDescription" rows="10" cols="30" ng-model="uploadCtrl.docs.fileDescription" class="form-control" required></textarea>
+        <textarea type="text" name="dscription" rows="10" cols="30" ng-model="uploadCtrl.docs.description" class="form-control" required></textarea>
 
         <p><input type="file" name="file" id="fileSelectorInput"  nv-file-select uploader="uploadCtrl.uploader"></p>
 
