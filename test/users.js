@@ -467,6 +467,39 @@ suite('Users', function() {
         });
     });
 
+    test('Cannot update your account with wrong password', function(done) {
+        rest.post(base_url + '/', {
+            data: {
+                email: "fake@gmail.com",
+                firstName: "Fake",
+                lastName: "Name",
+                password: "badPassword#1"
+            }
+        }).on('complete', function(data) {
+            rest.post(base_url + '/authenticate', {
+                data: {
+                    email: 'fake@gmail.com',
+                    password: 'badPassword#1'
+                }
+            }).on('complete', function(data) {
+                rest.put(base_url + '/1', {
+                    data:
+                    {
+                        token: data.token,
+                        email: "fake@gmail.com",
+                        firstName: "Bob",
+                        lastName: "Name",
+                        password: "badPassword#1",
+                        confirmPassword: "badPassword#2"
+                    }
+                }).on('complete', function(data) {
+                    assert.equal(403, data.statusCode);
+                    done();
+                });
+            });
+        });
+    });
+
     test('Can update your account', function(done) {
         rest.post(base_url + '/', {
             data: {
@@ -489,7 +522,8 @@ suite('Users', function() {
                         email: "fake@gmail.com",
                         firstName: "Bob",
                         lastName: "Name",
-                        password: "badPassword#1"
+                        password: "badPassword#1",
+                        confirmPassword: "badPassword#1"
                     }
                 }).on('complete', function(data) {
                     assert.equal(200, data.statusCode);

@@ -39,7 +39,7 @@
                 alert(res.data.message);
                 $scope.submitting = false;
                 $scope.user = {};
-                $scope.confirmPassword = null;
+                $scope.comparePassword = "";
             }, function(err) {
                 alert(err.data.message);
                 $scope.submitting = false;
@@ -65,9 +65,10 @@
         $scope.showLogin = false;
         $scope.user = {};
         $scope.response = "";
-        $scope.logged = ($cookies.get('token') !== null);
+        $scope.logged = ($cookies.get('token') !== undefined);
 
-        updateLogged();
+        if ($scope.logged)
+            updateLogged();
 
         $scope.logout = function() {
             $cookies.remove('token');
