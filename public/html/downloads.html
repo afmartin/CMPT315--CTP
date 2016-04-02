@@ -8,15 +8,15 @@
         Province: {{document.PROVINCE}}<br>
         Grade: {{document.GRADE}}<br>
         Subject: {{document.SUBJECT}}<br>
-        Your Rating:
-        <select id="document.DOC_ID" ng-model="document.rating">
-        <option value=1>1</option>
-        <option value=2>2</option>
-        <option value=3>3</option>
-        <option value=4>4</option>
-        <option value=5>5</option>
+        Your Rating:{{document.rating}}
+        <select id="document.DOC_ID" ng-init="document.rating" ng-model="document.rating">
+            <option value=1>1</option>
+            <option value=2>2</option>
+            <option value=3>3</option>
+            <option value=4>4</option>
+            <option value=5>5</option>
         </select> <button type="button" ng-click="downloadCtrl.rateDoc(document.DOC_ID)">Rate  this Doc</button><br>
-        <button type="button" ng-click="downloadCtrl.getMoreInfo(document.DOC_ID)">More Info</button>
+        <button type="button" ng-click="downloadCtrl.getMo"reInfo(document.DOC_ID)">More Info</button>
         <button type="button" ng-click="downloadCtrl.displayAddCommentForm(document.DOC_ID)">Add Comment</button>
     </p>
     </div>
