@@ -70,4 +70,11 @@
         }
     });
 
+    app.directive("editUser", function() {
+        return {
+            restrict: 'E',
+            templateUrl: "../html/edit-user.html"
+        };
+    });
+
 })();

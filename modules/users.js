@@ -154,16 +154,16 @@ function validateUser(user, callback) {
     errors = [];
     var emailVerify = /^\S+@\S+\.\S+$/;
 
-    if (user.email === null || !emailVerify.test(user.email)) {
+    if (!user.email || !emailVerify.test(user.email)) {
         errors.push("Invalid email");
     }
-    if (user.firstName === null) {
+    if (!user.firstName) {
         errors.push("First name required");
     }
-    if (user.lastName === null) {
+    if (!user.lastName) {
         errors.push("Last name required");
     }
-    if (user.password === null || user.password.length < 6 || user.password.length > 64) {
+    if (!user.password || user.password.length < 6 || user.password.length > 64) {
         errors.push("Password must be between 6 and 64 characters");
     }
     callback(errors);
@@ -252,7 +252,9 @@ module.exports.update = function(req, res) {
             if (user === undefined) {
                 sendResponse(res, 404, { message: "User not found" });
             } else if (req.decoded.userID == Number(id)) {
-                confirmPassword(id, user_changes.confirmPassword, function success() {
+                confirmPassword(id, user_changes.currentPassword, function success() {
+                        if (!user_changes.password)
+                            user_changes.password = user_changes.currentPassword;
                         validateUser(user_changes, function(errors) {
                             if (errors.length > 0) {
                                 sendResponse(res, 400, {
@@ -269,7 +271,7 @@ module.exports.update = function(req, res) {
                             }
                         });
                 }, function failure() {
-                    sendResponse(res, 403, { message: "Unauthorized" });
+                    sendResponse(res, 403, { message: "Current password does not match." });
                 });
             } else {
                 sendResponse(res, 403, { message: "Unauthorized" });
