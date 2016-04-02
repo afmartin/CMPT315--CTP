@@ -1,11 +1,12 @@
 <div ng-repeat="info in d.info">
     <p class="preview" ng-show="d.getDisplay(info)">
-        <img height="100" width="100" ng-src="{{info.previewPath}}"/><br>
+        <img height="100" width="100" ng-src="{{info.previewPath}}"/>
         Title: {{info.title}}<br>
         Province: {{info.province}}<br>
         Grade: {{info.grade}}<br>
         Subject: {{info.subject}}<br>
-        Average Rating: {{info.avgRating}}<br>
+        Average Rating:
+        <span star-rating rating-value="info.avgRating" max="d.max" ></span><br>
         <button type="button" ng-click="d.getMoreInfo(info.DOC_ID)">More Info</button><br>
     </p>
 </div>

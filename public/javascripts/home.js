@@ -1,26 +1,21 @@
 (function() {
     var app = angular.module('home', ['ctp', 'ngFileSaver']);
     var docs;
-    var token;
 
-    app.controller('DocController',['$http', 'FileSaver', 'Blob', function($http, FileSaver, Blob){
+    app.controller('DocController',['$http', 'FileSaver', 'Blob', '$cookies', function($http, FileSaver, Blob, $cookies){
         docs = this;
         docs.info = [];
         docs.moreInfo = {};
+        docs.max = 5;
+        docs.current =0;
 
-        $http.post('./api/v1/users/authenticate', {email:"fake@gmail.com",password:"badPassword#1" }).then(function(res){
-            token = res.data.token;
-            $http.get('./api/v1/documents').success(function (data) {
-                if(data.statusCode !== 200) {
-                    alert(JSON.stringify(data.statusCode + " " + data.message));
-                }
-                docs.info = data.info;
-                docs.setAllPreviews();
-            });
-        }, function(res){
-            alert(JSON.stringify(res.data.statusCode + " " + res.data.message));
+        $http.get('./api/v1/documents').success(function (data) {
+            if(data.statusCode !== 200) {
+                alert(JSON.stringify(data.statusCode + " " + data.message));
+            }
+            docs.info = data.info;
+            docs.setAllPreviews();
         });
-
 
         docs.getDisplay = function(d){
             return d.display;
@@ -28,22 +23,22 @@
 
         docs.getMoreInfo = function(id){
             docs.clearAllPreviews();
-            $http.get('./api/v1/documents/' + id + '?token=' + token).then(function (res) {
+            $http.get('./api/v1/documents/' + id + '?token=' + $cookies.get('token')).then(function (res) {
                 docs.moreInfo = res.data;
                 docs.moreInfo.display = true;
             }, function(res){
-                alert(JSON.stringify(res.data.statusCode + " " + res.data.message))
+                alert(JSON.stringify(res.data.statusCode + " " + res.data.message));
+                docs.back();
             });
-            docs.clearAllPreviews();
         };
 
         docs.filter=function(atr, val){
             docs.info.forEach(function(i){
-                if(i[atr] === val){
-                    i.display = true;
+                if(atr === 'avgRating'){
+                    i.display = i[atr] >= Number(val);
                 }
                 else {
-                    i.display = false;
+                    i.display = i[atr] === val;
                 }
             });
         };
@@ -65,12 +60,11 @@
             docs.setAllPreviews();
         };
 
-
         docs.download = function(path, mime, name, id) {
             $http.get(path, {responseType:'arraybuffer'}).then(function (res) {
                 var fi = new Blob([res.data], {type: mime + ';charset=utf-8'});
                 FileSaver.saveAs(fi, name);
-                $http.post('./api/v1/downloads?token=' + token, {docID:id}).then(function(res){
+                $http.post('./api/v1/downloads?token=' + $cookies.get('token'), {docID:id}).then(function(res){
                 }, function(res){
                     alert(JSON.stringify(res.data.statusCode + " " + res.data.message));
                 });
@@ -86,6 +80,30 @@
             templateUrl: "../html/home.html",
             controller: "DocController",
             controllerAs: "d"
+
         };
+    });
+
+    app.directive('starRating', function () {
+        return {
+            restrict: 'A',
+            template: '<ul class="rating">' +
+            '<li ng-repeat="star in stars" ng-class="star">' +
+            '\u2605' +
+            '</li>' +
+            '</ul>',
+            scope: {
+                ratingValue: '=',
+                max: '='
+            },
+            link: function (docs) {
+                docs.stars = [];
+                for (var i = 0; i < docs.max; i++) {
+                    docs.stars.push({
+                        filled: i < docs.ratingValue
+                    });
+                }
+            }
+        }
     });
 })();
