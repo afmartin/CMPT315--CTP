@@ -1,5 +1,5 @@
 <section ng-controller="DocController as d">
-    <h2>Grades</h2>
+    <h2>Grade</h2>
     <div class="dropdown">
         <a href="#">1-2</a>
         <div class="dropdown-content">
@@ -38,7 +38,6 @@
     <div class="dropdown">
         <a href="#">Math</a>
         <div class="dropdown-content">
-            <p><a ng-click="d.filter('subject', 'Math')" href="#">All</a></p>
             <p><a ng-click="d.filter('subject', 'Algebra')" href="#">Algebra</a></p>
             <p><a ng-click="d.filter('subject', 'Arithmetic')" href="#">Arithmetic</a></p>
             <p><a ng-click="d.filter('subject', 'Calculus')" href="#">Calculus</a></p>
@@ -77,6 +76,18 @@
             <p><a ng-click="d.filter('province', 'ON')" href="#">ON</a></p>
             <p><a ng-click="d.filter('province', 'QC')" href="#">QC</a></p>
 
+        </div>
+    </div><br>
+
+    <h2>Popularity</h2>
+    <div class="dropdown">
+        <a href="#">Min Avg Rating</a>
+        <div class="dropdown-content">
+            <p><a ng-click="d.filter('avgRating', '1')" href="#">1 Star</a></p>
+            <p><a ng-click="d.filter('avgRating', '2')" href="#">2 Stars</a></p>
+            <p><a ng-click="d.filter('avgRating', '3')" href="#">3 Stars</a></p>
+            <p><a ng-click="d.filter('avgRating', '4')" href="#">4 Stars</a></p>
+            <p><a ng-click="d.filter('avgRating', '5')" href="#">5 Stars</a></p>
         </div>
     </div><br>
 </section>
