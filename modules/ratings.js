@@ -32,7 +32,6 @@ exports.create = function(req, res) {
         var newrating = req.body.rating;
         var docID = req.body.docID;
         var userID = req.decoded.userID;
-        console.log(newrating,docID);
 
         if (docID == null || newrating == null || userID == null ) {
             res.statusCode = 400;
@@ -43,7 +42,7 @@ exports.create = function(req, res) {
         }
         else {
             helper.downloadCheck(docID, userID, res, function () {
-                database.db.query("insert into RATING (user_reviewed_by, owner, rating, doc_id) values (" + userID + ", "   + newrating + "," + docID + ");", function (err, rows) {
+                database.db.query("insert into RATING (user_reviewed_by, rating, doc_id) values (" + userID + ", "   + newrating + "," + docID + ");", function (err, rows) {
                     if (err) {
                         res.statusCode = 500;
                         res.json({
