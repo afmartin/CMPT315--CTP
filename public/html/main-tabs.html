@@ -1,16 +1,16 @@
 <header header ng-show="true"></header>
 <nav>
     <ul>
-        <li ng-class="{active:tab.isSet(1) }">
-            <a href ng-click="tab.setTab(1)">HOME</a>
+        <li ng-class="{selected:tab.isSet(1)}" ng-controller="DocController as d">
+            <a href ng-click="d.refresh()">HOME</a>
         </li>
-        <li ng-class="{active:tab.isSet(2) }">
+        <li ng-class="{selected:tab.isSet(2) }">
             <a href ng-click="tab.setTab(2)">MY DOCUMENTS</a>
         </li>
-        <li ng-class="{active:tab.isSet(3) }">
+        <li ng-class="{selected:tab.isSet(3) }">
             <a href ng-click="tab.setTab(3)">ABOUT</a>
         </li>
-        <li ng-class="{active:tab.isSet(4) }">
+        <li ng-class="{selected:tab.isSet(4) }">
             <a href ng-click="tab.setTab(4)">CONTACT</a>
         </li>
     </ul>

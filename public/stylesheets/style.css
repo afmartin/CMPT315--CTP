@@ -209,24 +209,16 @@ footer {
     text-align:       left;
 }
 
-.preview img{
-    float: right;
-}
-
-.details{
-    text-align: left;
-}
-
-.details .details-dropdown{
+.preview .preview-dropdown{
     float:     right;
 }
 
-.details-dropdown {
+.preview-dropdown {
     position:          relative;
     display:           inline-block;
 }
 
-.details-dropdown-content {
+.preview-dropdown-content {
     display:           none;
     position:          absolute;
     right:              100%;
@@ -237,10 +229,9 @@ footer {
     z-index:           1;
 }
 
-.details-dropdown:hover .details-dropdown-content {
+.preview-dropdown:hover .preview-dropdown-content {
     display:           block;
 }
-
 
 .rating {
     color: #a9a9a9;
