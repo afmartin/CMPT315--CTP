@@ -28,7 +28,6 @@
         docs.moreInfo = {};
         docs.me;
 
-
         if($cookies.get('token') !== undefined) {
             token = $cookies.get('token');
 
@@ -41,7 +40,6 @@
                 for(var i=0;i<docs.info.length;i++){
                     docs.getYourRating(docs.info[i],docs.info[i].rating);
                 }
-                console.log(docs.info);
                 docs.setAllPreviews();
             });
         }
@@ -60,19 +58,14 @@
             docs.clearAllPreviews();
             var id=id;
             $http({method:'GET', url: './api/v1/downloads',headers: {'token': token} }).then(function(data){
-                console.log(data);
                 data.data.downloads.forEach(function(obj){
                     if(obj.DOC_ID==id){
                         docs.moreInfo=obj;
                     }
                 });
                 docs.moreInfo.display = true;
-                console.log("owner",docs.moreInfo.OWNER_ID);
                 $http({method:'GET', url: './api/v1/comments?docID='+docs.moreInfo.DOC_ID,headers: {'token': token} }).then(function(dat){
-                    console.log(dat.data.comments);
-
                     docs.moreInfo.comments= dat.data.comments;
-
                     docs.moreInfo.comments.forEach(function(obj){
                         if(obj.OWNER == docs.me){
                             obj.display=true;
@@ -109,7 +102,6 @@
         //comment handling----------------------------
         this.addComment = function(){
             docs.comment;
-            console.log(token, docs.comment);
             $http({method:'POST', url: './api/v1/comments',headers: {'token': token},data:{docID: docs.id, comment: docs.comment} }).then(function(data){
                 docs.displayCommentForm = false;
                 delete docs.comment;
@@ -131,11 +123,9 @@
         };
 
         this.updateComment = function(comment){
-            console.log(comment);
             $http({method:'PUT', url: './api/v1/comments/'+comment.COMMENT_ID,headers: {'token': token},data:{docID: comment.DOC_ID, comment: comment.COMMENT, userID: comment.OWNER} }).then(function(data){
                 alert("Comment updated succesfully!!");
             });
-
         };
 
         this.deleteComment = function(comment){
@@ -207,7 +197,6 @@
             hist.clearAllPreviews();
             $http.get('./api/v1/documents/' + id + '?token=' + token).then(function (res) {
                 hist.moreInfo = res.data;
-                console.log(hist.moreInfo);
                 hist.moreInfo.display = true;
             }, function(res){
                 alert(JSON.stringify(res.data.statusCode + " " + res.data.message))
@@ -254,8 +243,13 @@
         this.docs = {};
         var test = 'home.html';
         var document = this.docs;
+        var upCtrl= this;
+        this.docID;
+
+        upCtrl.uploadSuccess = false;
         if($cookies.get('token') !== undefined)token=$cookies.get('token');
-        this.uploader = new FileUploader({url: "http://localhost:3000/api/v1/documents", headers: {token: token}, });
+        this.uploader = new FileUploader({url: "http://localhost:3000/api/v1/documents", headers: {token: token} });
+        upCtrl.previewUploader = new FileUploader({url: "http://localhost:3000/api/v1/documents/", headers: {token: token}, });
         var uploads = this.uploader;
 
         //this.uploader.testFile = test;
@@ -263,13 +257,30 @@
         this.addDoc = function() {
             var item = uploads.queue[0];
             item.formData.push(document);
-            uploads.uploadAll();
-            if(item.isSuccess){
-                alert("File upload succesfully!!");
-                document = {};
-                console.log(document);
-            }
+            uploads.uploadItem(item);
+
+            uploads.onSuccessItem = function (item, res, status, headers) {
+                if(item.isSuccess) {
+                    alert("File upload succesfully!!");
+                    upCtrl.uploadSuccess = true;
+                    upCtrl.docID = res.DOC_ID;
+                }
+            };
         };
+
+        this.uploadPreview = function(){
+            var preview=upCtrl.previewUploader.queue[0];
+            preview.url = "http://localhost:3000/api/v1/documents/"+upCtrl.docID;
+            upCtrl.previewUploader.uploadAll();
+            upCtrl.previewUploader.onSuccessItem = function(){
+                alert("Preview uploaded successfully");
+                upCtrl.uploadSuccess = false;
+            };
+        };
+
+        this.noPreview = function(){
+            upCtrl.uploadSuccess = false;
+        }
     }]);
 
 

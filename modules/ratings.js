@@ -67,7 +67,6 @@ exports.update = function(req, res) {
         var docID = Number(req.body.docID);
         var newrating = Number(req.body.rating);
         var userID = Number(req.decoded.userID);
-
         if(docID == null || newrating == null || userID == null) {
             res.statusCode = 400;
             res.json({
