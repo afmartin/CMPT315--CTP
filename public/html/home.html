@@ -1,19 +1,26 @@
 <div ng-repeat="info in d.info">
-    <p class="preview" ng-show="d.getDisplay(info)">
-        <img height="100" width="100" ng-src="{{info.previewPath}}"/>
+    <div class="preview" ng-show="d.getDisplay(info)">
+
+        <br>
+        <div class="preview-dropdown">
+            <img height="100" width="100" ng-src="{{info.previewPath}}"/><br>
+            <div class="preview-dropdown-content">
+                <img height="350" width="350" ng-src="{{info.previewPath}}"/><br>
+            </div>
+        </div>
         Title: {{info.title}}<br>
         Province: {{info.province}}<br>
         Grade: {{info.grade}}<br>
         Subject: {{info.subject}}<br>
         Average Rating:
         <span star-rating rating-value="info.avgRating" max="d.max" ></span><br>
-        <button type="button" ng-click="d.getMoreInfo(info.DOC_ID)">More Info</button><br>
-    </p>
+        <button type="button" ng-click="d.getMoreInfo(info.DOC_ID)">More Info</button><br><br>
+    </div>
 </div>
-<div class="details" ng-show="d.moreInfo.display">
-    <div class="details-dropdown">
+<div class="preview" ng-show="d.moreInfo.display">
+    <div class="preview-dropdown">
     <img height="100" width="100" ng-src="{{d.moreInfo.previewPath}}"/><br>
-        <div class="details-dropdown-content">
+        <div class="preview-dropdown-content">
             <img height="350" width="350" ng-src="{{d.moreInfo.previewPath}}"/><br>
         </div>
     </div>
