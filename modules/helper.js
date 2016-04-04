@@ -13,9 +13,9 @@ exports.createFalseData = function(callback){
         "insert into USERS (email, PASSWORD, FIRST_NAME, LAST_NAME) values ('jobesmith@mailinator.com', '"+pass[1] +"', 'jobe', 'smith'); ",
         "insert into USERS (email, PASSWORD, FIRST_NAME, LAST_NAME) values ('kobesmith@mailinator.com', '"+pass[1] +"', 'kobe', 'smith'); ",
         "insert into USERS (email, PASSWORD, FIRST_NAME, LAST_NAME) values ('bobsmith@mailinator.com', '"+pass[2] +"', 'bob', 'smith'); ",
-        "insert into DOCUMENTS (owner_id, extensions, description, title, grade, PROVINCE, subject) values (1, 'txt', 'textfile of computer history', 'history', '12','AB','CMPT'); ",
-        "insert into DOCUMENTS (owner_id, extensions, description, title, grade, PROVINCE, subject) values (2, 'js', 'javascript file', 'javascript', '12','BC','CMPT'); ",
-        "insert into DOCUMENTS (owner_id, extensions, description, title, grade, PROVINCE, subject) values (3, 'txt', 'textfile of gibberish', 'random file', '5','ON','???'); ",
+        "insert into DOCUMENTS (owner_id, extensions, MIME, description, title, grade, PROVINCE, subject) values (1, 'txt', '?', 'textfile of computer history', 'history', '12','AB','CMPT'); ",
+        "insert into DOCUMENTS (owner_id, extensions, MIME, description, title, grade, PROVINCE, subject) values (2, 'js', '?', 'javascript file', 'javascript', '12','BC','CMPT'); ",
+        "insert into DOCUMENTS (owner_id, extensions, MIME, description, title, grade, PROVINCE, subject) values (3, 'txt', '?', 'textfile of gibberish', 'random file', '5','ON','???'); ",
         "insert into DOWNLOADS values (1,1,curtime());"];
 
     var count = 0;

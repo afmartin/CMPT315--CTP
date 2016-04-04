@@ -30,6 +30,26 @@ function deleteById(id, success, failure) {
     }
 }
 
+function confirmPassword(id, password, success, failure) {
+    var query = "SELECT PASSWORD as password FROM USERS WHERE U_ID = (?)";
+    try {
+        database.db.query(query, [id], function(err, rows) {
+            if (err)
+                failure();
+            bcrypt.compare(password, rows[0].password, function (err, res) {
+                if (err || !res) {
+                    failure();
+                } else {
+                    success();
+                }
+            });
+        });
+    } catch (err) {
+        console.log(err);
+        failure();
+    }
+}
+
 function findById(id, callback) {
     var query = "SELECT U_ID as id, email, first_name as firstName, last_name as lastName, bio" +
         " FROM USERS" +
@@ -134,16 +154,16 @@ function validateUser(user, callback) {
     errors = [];
     var emailVerify = /^\S+@\S+\.\S+$/;
 
-    if (user.email === null || !emailVerify.test(user.email)) {
+    if (!user.email || !emailVerify.test(user.email)) {
         errors.push("Invalid email");
     }
-    if (user.firstName === null) {
+    if (!user.firstName) {
         errors.push("First name required");
     }
-    if (user.lastName === null) {
+    if (!user.lastName) {
         errors.push("Last name required");
     }
-    if (user.password === null || user.password.length < 6 || user.password.length > 64) {
+    if (!user.password || user.password.length < 6 || user.password.length > 64) {
         errors.push("Password must be between 6 and 64 characters");
     }
     callback(errors);
@@ -232,20 +252,26 @@ module.exports.update = function(req, res) {
             if (user === undefined) {
                 sendResponse(res, 404, { message: "User not found" });
             } else if (req.decoded.userID == Number(id)) {
-                validateUser(user_changes, function(errors) {
-                    if (errors.length > 0) {
-                        sendResponse(res, 400, {
-                            message: "User data failed validation",
-                            errors: errors
+                confirmPassword(id, user_changes.currentPassword, function success() {
+                        if (!user_changes.password)
+                            user_changes.password = user_changes.currentPassword;
+                        validateUser(user_changes, function(errors) {
+                            if (errors.length > 0) {
+                                sendResponse(res, 400, {
+                                    message: "User data failed validation",
+                                    errors: errors
+                                });
+                            } else {
+                                user_changes.password = hashPassword(user_changes.password);
+                                update(user_changes, Number(id), function() {
+                                    sendResponse(res, 200, {message: "User updated successfully"});
+                                }, function() {
+                                    sendResponse(res, 500, {message: "Failed to update user"});
+                                });
+                            }
                         });
-                    } else {
-                        user_changes.password = hashPassword(user_changes.password);
-                        update(user_changes, Number(id), function() {
-                            sendResponse(res, 200, {message: "User updated successfully"});
-                        }, function() {
-                            sendResponse(res, 500, {message: "Failed to update user"});
-                        });
-                    }
+                }, function failure() {
+                    sendResponse(res, 403, { message: "Current password does not match." });
                 });
             } else {
                 sendResponse(res, 403, { message: "Unauthorized" });
@@ -263,7 +289,7 @@ module.exports.whoami = function(req, res) {
 
 
 module.exports.getAuthentication = function(req, res){
-    if(req.body.email == undefined || req.body.password == undefined){
+    if(req.body.email === undefined || req.body.password === undefined){
         sendResponse(res, 400, {message: "Invalid email or password"});
         return;
     }
@@ -271,17 +297,17 @@ module.exports.getAuthentication = function(req, res){
     user.email = req.body.email;
     user.password = req.body.password;
 
-    var query = "select * from USERS where email=?;";
+    var query = "SELECT * FROM USERS WHERE EMAIL = (?);";
 
     database.db.query(query,[user.email],function(err,rows){
         if (err) {
             console.log(query,err);
             sendResponse(res, 500, { message: "Failed to authorize." }); 
-        } else if(rows.length == 0) {
+        } else if(rows.length === 0) {
             sendResponse(res, 400, {message: "Invalid email"});
         }
         else {
-            bcrypt.compare(user.password, rows[0]["PASSWORD"], function (err, r) {
+            bcrypt.compare(user.password, rows[0].PASSWORD, function (err, r) {
                 if (err || !r) {
                     sendResponse(res, 500, {message: "Authentication failure"});
                     return;

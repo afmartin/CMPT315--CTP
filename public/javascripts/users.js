@@ -28,7 +28,7 @@
     });
 
     app.controller('UserRegisterController', ['$scope', '$http', function($scope, $http) {
-        $scope.email = {};
+        $scope.user = {};
         $scope.message = null; // messages from server.
         $scope.submitting = false;
 
@@ -39,7 +39,7 @@
                 alert(res.data.message);
                 $scope.submitting = false;
                 $scope.user = {};
-                $scope.confirmPassword = null;
+                $scope.comparePassword = "";
             }, function(err) {
                 alert(err.data.message);
                 $scope.submitting = false;
@@ -47,7 +47,45 @@
         };
     }]);
 
-    app.controller('AuthController', ['$scope', '$http', '$cookies', function($scope, $http, $cookies) {
+    app.controller('UserEditController', ['$scope', '$http', '$cookies', '$rootScope', function($scope, $http, $cookies, $rootScope) {
+        function loadUserData() {
+            $http.post(url + 'users/whoami',
+                    {
+                        token: $cookies.get('token')
+                    }
+            ).then(function (res) {
+                $scope.user = res.data.user;
+            }, function(err) {
+            });
+        }
+
+        $scope.editing = true;
+        $scope.user = {};
+        $scope.submitting = false;
+        $scope.errors = [];
+        loadUserData();
+
+        $scope.submit = function() {
+            var data = $scope.user;
+            data.token = $cookies.get('token');
+            $scope.submitting = true;
+            $http.put(url + 'users/' + $scope.user.id, data)
+            .then(function(res) {
+                alert(res.data.message);
+                $scope.submitting = false;
+                $scope.user = {};
+                loadUserData();
+                $rootScope.$emit("UpdateUserInfo");
+            }, function(err) {
+                alert(err.data.message);
+                $scope.submitting = false;
+                console.log(err.data);
+                $scope.errors = err.data.errors;
+            });
+        };
+    }]);
+
+    app.controller('AuthController', ['$scope', '$http', '$cookies', '$rootScope', function($scope, $http, $cookies, $rootScope) {
        function updateLogged() {
             $http.post(url + 'users/whoami',
                     {
@@ -65,9 +103,14 @@
         $scope.showLogin = false;
         $scope.user = {};
         $scope.response = "";
-        $scope.logged = ($cookies.get('token') !== null);
+        $scope.logged = ($cookies.get('token') !== undefined);
 
-        updateLogged();
+        if ($scope.logged)
+            updateLogged();
+
+        $rootScope.$on("UpdateUserInfo", function() {
+            updateLogged();
+        });
 
         $scope.logout = function() {
             $cookies.remove('token');
