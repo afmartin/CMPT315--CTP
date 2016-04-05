@@ -2,20 +2,30 @@
     var app = angular.module('home', ['ctp', 'ngFileSaver']);
     var docs;
 
-    app.controller('DocController',['$http', 'FileSaver', 'Blob', '$cookies', function($http, FileSaver, Blob, $cookies){
+    app.controller('DocController',['$http', 'FileSaver', 'Blob', '$cookies', '$scope', function($http, FileSaver, Blob, $cookies, $scope){
         docs = this;
         docs.info = [];
         docs.moreInfo = {};
         docs.max = 5;
         docs.current =0;
 
-        $http.get('./api/v1/documents').success(function (data) {
-            if(data.statusCode !== 200) {
-                alert(JSON.stringify(data.statusCode + " " + data.message));
-            }
-            docs.info = data.info;
-            docs.setAllPreviews();
-        });
+        docs.refresh = function() {
+            $scope.$parent.tab.setTab(1);
+            docs.run();
+        };
+
+        docs.run = function() {
+
+            $http.get('./api/v1/documents').success(function (data) {
+                if (data.statusCode !== 200) {
+                    alert(JSON.stringify(data.statusCode + " " + data.message));
+                }
+                docs.info = data.info;
+                docs.setAllPreviews();
+                docs.moreInfo.display=false;
+            });
+        };
+        docs.run();
 
         docs.getDisplay = function(d){
             return d.display;
@@ -72,6 +82,7 @@
                 alert(JSON.stringify(res.data.statusCode + " " + res.data.message));
             });
         };
+
     }]);
 
     app.directive("home", function() {
