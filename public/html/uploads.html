@@ -3,13 +3,13 @@
     <form name="upload" enctype="multipart/form-data" ng-submit="upload.$valid && uploadCtrl.addDoc()" ng-show="!uploadCtrl.uploadSuccess" novalidate>
 
         File Description: <br>
-        <textarea type="text" name="description" rows="10" cols="30" ng-model="uploadCtrl.docs.description" class="form-control" required></textarea>
+        <textarea type="text" name="description" rows="10" cols="30" ng-model="docs.description" class="form-control" required></textarea>
 
         <p><input type="file" name="file" id="fileSelectorInput"  nv-file-select uploader="uploadCtrl.uploader" class="form-control"></p>
 
         <p>GRADES</p>
 
-        <select class="form-control" name="grade" ng-model="uploadCtrl.docs.grade">
+        <select class="form-control" name="grade" ng-model="docs.grade">
             <option value="K">K</option>
             <option value="1">1</option>
             <option value="2">2</option>
@@ -27,7 +27,7 @@
 
         <p>Subject</p>
 
-        <select class="form-control" name="subject" ng-model="uploadCtrl.docs.subject">
+        <select class="form-control" name="subject" ng-model="docs.subject">
             <option value="Math">Math</option>
             <option value="English">English</option>
             <option value="Chemistry">Chemistry</option>
@@ -42,7 +42,7 @@
 
         <p>PROVINCE</p>
 
-        <select class="form-control" name="subject" ng-model="uploadCtrl.docs.province">
+        <select class="form-control" name="subject" ng-model="docs.province">
             <option value="AB">AB</option>
             <option value="BC">BC</option>
             <option value="MB">MB</option>

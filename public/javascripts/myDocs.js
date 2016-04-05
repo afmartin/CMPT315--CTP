@@ -239,31 +239,32 @@
 
     }]);
 
-    app.controller('UploadCtrl',['$http','FileUploader','$log','$cookies', function($http, FileUploader, $log,$cookies){
-        this.docs = {};
+    app.controller('UploadCtrl',['$http','FileUploader','$log','$cookies','$scope', function($http, FileUploader, $log,$cookies,$scope){
+        $scope.docs = {};
         var test = 'home.html';
-        var document = this.docs;
+        var document = $scope.docs;
         var upCtrl= this;
         this.docID;
 
         upCtrl.uploadSuccess = false;
         if($cookies.get('token') !== undefined)token=$cookies.get('token');
         this.uploader = new FileUploader({url: "http://localhost:3000/api/v1/documents", headers: {token: token} });
-        upCtrl.previewUploader = new FileUploader({url: "http://localhost:3000/api/v1/documents/", headers: {token: token}, });
+        upCtrl.previewUploader = new FileUploader({url: "http://localhost:3000/api/v1/documents/", headers: {token: token} });
         var uploads = this.uploader;
 
         //this.uploader.testFile = test;
         //alert(JSON.stringify(uploads));
         this.addDoc = function() {
             var item = uploads.queue[0];
-            item.formData.push(document);
+            item.formData.push($scope.docs);
             uploads.uploadItem(item);
-
+            console.log($scope.docs);
             uploads.onSuccessItem = function (item, res, status, headers) {
                 if(item.isSuccess) {
                     alert("File upload succesfully!!");
                     upCtrl.uploadSuccess = true;
                     upCtrl.docID = res.DOC_ID;
+                    $scope.docs = {};
                 }
             };
         };
