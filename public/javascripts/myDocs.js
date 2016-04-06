@@ -1,20 +1,33 @@
 (function() {
     var app = angular.module('myDocs', ['angularFileUpload','ngCookies']);
     var token;
-    app.controller("TabControl",['$cookies', function($cookies){
+    app.controller("TabControl",['$cookies','$scope', function($cookies,$scope){
         this.tab = 2;
 
         this.isSet = function(checkTab) {
             if($cookies.get('token') !== undefined) {
                 token = $cookies.get('token');
-            };
+            }
             return this.tab === checkTab;
         };
 
         this.setTab = function(activeTab) {
             if($cookies.get('token') !== undefined) {
                 token = $cookies.get('token');
-            };
+            }
+            console.log(activeTab);
+            if(activeTab==1){
+                $scope.$emit("histClick");
+                $scope.$broadcast("histClick");
+            }
+            else if(activeTab==3){
+                $scope.$emit("downClick");
+                $scope.$broadcast("downClick");
+            }
+            else{
+                $scope.$emit("upClick");
+                $scope.$broadcast("upClick");
+            }
             this.tab = activeTab;
         };
 
@@ -22,28 +35,29 @@
 
     }]);
 
-    app.controller("DownloadCtrl", ['$http', 'Blob','$cookies', function($http, Blob,$cookies){
+    app.controller("DownloadCtrl", ['$http', 'Blob','$cookies','$scope', function($http, Blob,$cookies,$scope){
         var docs = this;
         docs.info = [];
         docs.moreInfo = {};
         docs.me;
 
-        if($cookies.get('token') !== undefined) {
-            token = $cookies.get('token');
+        $scope.$on("downClick", function (event, args) {
 
-            $http({method: 'POST', url: './api/v1/users/whoami', headers: {'token': token}}).then(function (res) {
-                docs.me = res.data.user.id;
-            });
+                token = $cookies.get('token');
 
-            $http({method: 'GET', url: './api/v1/downloads', headers: {'token': token}}).success(function (data) {
-                docs.info = data.downloads;
-                for(var i=0;i<docs.info.length;i++){
-                    docs.getYourRating(docs.info[i],docs.info[i].rating);
-                }
-                docs.setAllPreviews();
-            });
-        }
+                $http({method: 'POST', url: './api/v1/users/whoami', headers: {'token': token}}).then(function (res) {
+                    docs.me = res.data.user.id;
+                });
 
+                $http({method: 'GET', url: './api/v1/downloads', headers: {'token': token}}).success(function (data) {
+                    docs.info = data.downloads;
+                    for (var i = 0; i < docs.info.length; i++) {
+                        docs.getYourRating(docs.info[i], docs.info[i].rating);
+                    }
+                    docs.setAllPreviews();
+                });
+
+        });
         docs.getDisplay = function(d){
             return d.display;
         };
@@ -172,15 +186,15 @@
 
     }]);
 
-    app.controller('HistoryCtrl',['$http','$cookies', function($http,$cookies){
+    app.controller('HistoryCtrl',['$http','$cookies','$scope', function($http,$cookies,$scope) {
         var hist = this;
         hist.info = [];
         hist.me;
         hist.moreInfo = {};
 
-        if($cookies.get('token') !== undefined)token=$cookies.get('token');
-
-        $http({method:'POST', url: './api/v1/users/whoami',headers: {'token': token} }).then(function(res) {
+        $scope.$on("histClick", function (event, args) {
+            token = $cookies.get('token');
+            $http({method: 'POST', url: './api/v1/users/whoami', headers: {'token': token}}).then(function (res) {
             hist.me = res.data.user.id;
             $http({
                 method: 'GET',
@@ -189,9 +203,11 @@
             }).then(function (data) {
                 hist.info = data.data.info;
                 hist.setAllPreviews();
-            },function(err){console.log(err)});
+            }, function (err) {
+                console.log(err)
+            });
         });
-
+        });
 
         hist.getMoreInfo = function(id){
             hist.clearAllPreviews();
@@ -248,19 +264,30 @@
         var document = $scope.docs;
         var upCtrl= this;
         this.docID;
-
+        //need to add in a $scope.on function
         upCtrl.uploadSuccess = false;
-        if($cookies.get('token') !== undefined)token=$cookies.get('token');
-        $scope.uploader = new FileUploader({url: "http://localhost:3000/api/v1/documents", headers: {token: token} });
-        $scope.previewUploader = new FileUploader({url: "http://localhost:3000/api/v1/documents/", headers: {token: token} });
+
+        $scope.$on("upClick", function (event, args) {
+            token = $cookies.get('token');
+        });
+
+        $scope.uploader = new FileUploader({
+            url: "http://localhost:3000/api/v1/documents",
+            headers: {token: token}
+        });
+        $scope.previewUploader = new FileUploader({
+            url: "http://localhost:3000/api/v1/documents/",
+            headers: {token: token}
+        });
         var uploads = $scope.uploader;
         var previewer = $scope.previewUploader;
+
+
         this.addDoc = function() {
             var length = uploads.queue.length;
             var item = uploads.queue[length-1];
             item.formData.push($scope.docs);
             uploads.uploadItem(item);
-            console.log($scope.docs);
             uploads.onSuccessItem = function (item, res, status, headers) {
                 if(item.isSuccess) {
                     alert("File upload succesfully!!");
