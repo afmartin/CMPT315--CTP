@@ -2,8 +2,8 @@
 
 <section ng-controller="DownloadCtrl as downloadCtrl">
     <div ng-repeat="document in downloadCtrl.info">
-    <p class="preview" ng-show="downloadCtrl.getDisplay(document)">
-        <img height="100" width="100" ng-src="{{document.previewPath}}"/><br>
+    <div class="preview" ng-show="downloadCtrl.getDisplay(document)">
+        <br>
         Title: {{document.TITLE}}<br>
         Province: {{document.PROVINCE}}<br>
         Grade: {{document.GRADE}}<br>
@@ -16,12 +16,12 @@
             <option value=4>4</option>
             <option value=5>5</option>
         </select> <button type="button" ng-click="downloadCtrl.rateDoc(document.DOC_ID)">Rate  this Doc</button><br>
-        <button type="button" ng-click="downloadCtrl.getMo"reInfo(document.DOC_ID)">More Info</button>
+        <button type="button" ng-click="downloadCtrl.getMoreInfo(document.DOC_ID)">More Info</button>
         <button type="button" ng-click="downloadCtrl.displayAddCommentForm(document.DOC_ID)">Add Comment</button>
-    </p>
     </div>
-    <div class="details" ng-show="downloadCtrl.moreInfo.display">
-        <img height="100" width="100" ng-src="{{downloadCtrl.moreInfo.previewPath}}"/><br>
+    </div>
+    <div class="preview" ng-show="downloadCtrl.moreInfo.display">
+        <br>
         Title: {{downloadCtrl.moreInfo.TITLE}}<br>
         Province: {{downloadCtrl.moreInfo.PROVINCE}}<br>
         Grade: {{downloadCtrl.moreInfo.GRADE}}<br>
