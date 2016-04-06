@@ -1,4 +1,24 @@
 <section ng-controller="DocController as d">
+
+    <h2>Location</h2>
+    <div class="dropdown">
+        <a href="#">Canada</a>
+        <div class="dropdown-content">
+            <p><a ng-click="d.filter('province', 'BC')" href="#">BC</a></p>
+            <p><a ng-click="d.filter('province', 'AB')" href="#">AB</a></p>
+            <p><a ng-click="d.filter('province', 'SK')" href="#">SK</a></p>
+            <p><a ng-click="d.filter('province', 'MB')" href="#">MB</a></p>
+            <p><a ng-click="d.filter('province', 'ON')" href="#">ON</a></p>
+            <p><a ng-click="d.filter('province', 'QC')" href="#">QC</a></p>
+            <p><a ng-click="d.filter('province', 'NB')" href="#">NB</a></p>
+            <p><a ng-click="d.filter('province', 'NS')" href="#">NS</a></p>
+            <p><a ng-click="d.filter('province', 'NF')" href="#">NF</a></p>
+            <p><a ng-click="d.filter('province', 'NT')" href="#">NT</a></p>
+            <p><a ng-click="d.filter('province', 'YT')" href="#">YT</a></p>
+            <p><a ng-click="d.filter('province', 'PE')" href="#">PE</a></p>
+        </div>
+    </div><br>
+
     <h2>Grade</h2>
     <div class="dropdown">
         <a href="#">1-2</a>
@@ -65,19 +85,7 @@
         </div>
     </div><br>
 
-    <h2>Location</h2>
-    <div class="dropdown">
-        <a href="#">Canada</a>
-        <div class="dropdown-content">
-            <p><a ng-click="d.filter('province', 'BC')" href="#">BC</a></p>
-            <p><a ng-click="d.filter('province', 'AB')" href="#">AB</a></p>
-            <p><a ng-click="d.filter('province', 'SK')" href="#">AK</a></p>
-            <p><a ng-click="d.filter('province', 'MB')" href="#">MB</a></p>
-            <p><a ng-click="d.filter('province', 'ON')" href="#">ON</a></p>
-            <p><a ng-click="d.filter('province', 'QC')" href="#">QC</a></p>
 
-        </div>
-    </div><br>
 
     <h2>Popularity</h2>
     <div class="dropdown">
