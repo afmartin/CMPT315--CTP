@@ -16,11 +16,11 @@
             <option value=4>4</option>
             <option value=5>5</option>
         </select> <button type="button" ng-click="downloadCtrl.rateDoc(document.DOC_ID)">Rate  this Doc</button><br>
-        <button type="button" ng-click="downloadCtrl.getMo"reInfo(document.DOC_ID)">More Info</button>
+        <button type="button" ng-click="downloadCtrl.getMoreInfo(document.DOC_ID)">More Info</button>
         <button type="button" ng-click="downloadCtrl.displayAddCommentForm(document.DOC_ID)">Add Comment</button>
     </div>
     </div>
-    <div class="details" ng-show="downloadCtrl.moreInfo.display">
+    <div class="preview" ng-show="downloadCtrl.moreInfo.display">
         <br>
         Title: {{downloadCtrl.moreInfo.TITLE}}<br>
         Province: {{downloadCtrl.moreInfo.PROVINCE}}<br>
