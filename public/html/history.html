@@ -1,17 +1,28 @@
  <div ng-controller="HistoryCtrl as his">
      <div ng-repeat="document in his.info">
-             <p class="preview" ng-show="his.getDisplay(document)">
-                 <img height="100" width="100" ng-src="{{info.previewPath}}"/><br>
+             <div class="preview" ng-show="his.getDisplay(document)">
+                 <br>
+                 <div class="preview-dropdown">
+                     <img height="100" width="100" ng-src="{{document.previewPath}}"/><br>
+                     <div class="preview-dropdown-content">
+                         <img height="350" width="350" ng-src="{{document.previewPath}}"/><br>
+                     </div>
+                 </div>
                  Title: {{document.title}}<br>
                  Province: {{document.province}}<br>
                  Grade: {{document.grade}}<br>
                  Subject: {{document.subject}}<br>
                  Average Rating: {{document.avgRating}}<br>
                  <button type="button" ng-click="his.getMoreInfo(document.DOC_ID)">More Info</button><br>
-             </p>
-         </div>
-         <div class="details" ng-show="his.moreInfo.display">
-             <img height="100" width="100" ng-src="{{his.moreInfo.previewPath}}"/><br>
+             </div>
+     </div>
+         <div class="preview" ng-show="his.moreInfo.display">
+             <div class="preview-dropdown">
+                 <img height="100" width="100" ng-src="{{his.moreInfo.previewPath}}"/><br>
+                 <div class="preview-dropdown-content">
+                     <img height="350" width="350" ng-src="{{his.moreInfo.previewPath}}"/><br>
+                 </div>
+             </div>
              Title: {{his.moreInfo.docData.title}}<br>
              Province: {{his.moreInfo.docData.province}}<br>
              Grade: {{his.moreInfo.docData.grade}}<br>

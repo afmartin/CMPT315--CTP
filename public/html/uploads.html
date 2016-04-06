@@ -5,7 +5,7 @@
         File Description: <br>
         <textarea type="text" name="description" rows="10" cols="30" ng-model="docs.description" class="form-control" required></textarea>
 
-        <p><input type="file" name="file" id="fileSelectorInput"  nv-file-select uploader="uploadCtrl.uploader" class="form-control"></p>
+        <p><input type="file" name="file" id="fileSelectorInput"  nv-file-select uploader="uploader" class="form-control"></p>
 
         <p>GRADES</p>
 
@@ -61,10 +61,10 @@
         <input type="submit" class="form-control" value="Submit">
 
     </form>
-    <form name="uploadPreview"  enctype="multipart/form-data" ng-show="uploadCtrl.uploadSuccess" ng-submit="uploadPreview.$valid && uploadCtrl.uploadPreview()" novalidate>
+    <form name="uploaderPreview"  enctype="multipart/form-data" ng-show="uploadCtrl.uploadSuccess" ng-submit="uploaderPreview.$valid && uploadCtrl.uploadPreview()" novalidate>
         Do you wish to upload a preview of your document?
 
-        <p><input type="file" name="image" id="previewSelector"  nv-file-select uploader="uploadCtrl.previewUploader"></p>
+        <p><input type="file" name="image" id="previewSelector"  nv-file-select uploader="previewUploader" class="form-control"></p>
         <button type="button" ng-click="uploadCtrl.noPreview()">No Preview Image</button>
         <input type="submit" class="form-control" value="Submit">
     </form>

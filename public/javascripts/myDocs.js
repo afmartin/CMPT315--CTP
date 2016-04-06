@@ -200,6 +200,9 @@
                 hist.moreInfo.display = true;
             }, function(res){
                 alert(JSON.stringify(res.data.statusCode + " " + res.data.message))
+            },function(res){
+                alert(JSON.stringify(res.data.statusCode + " " + res.data.message));
+                his.back();
             });
             hist.clearAllPreviews();
         };
@@ -248,14 +251,13 @@
 
         upCtrl.uploadSuccess = false;
         if($cookies.get('token') !== undefined)token=$cookies.get('token');
-        this.uploader = new FileUploader({url: "http://localhost:3000/api/v1/documents", headers: {token: token} });
-        upCtrl.previewUploader = new FileUploader({url: "http://localhost:3000/api/v1/documents/", headers: {token: token} });
-        var uploads = this.uploader;
-
-        //this.uploader.testFile = test;
-        //alert(JSON.stringify(uploads));
+        $scope.uploader = new FileUploader({url: "http://localhost:3000/api/v1/documents", headers: {token: token} });
+        $scope.previewUploader = new FileUploader({url: "http://localhost:3000/api/v1/documents/", headers: {token: token} });
+        var uploads = $scope.uploader;
+        var previewer = $scope.previewUploader;
         this.addDoc = function() {
-            var item = uploads.queue[0];
+            var length = uploads.queue.length;
+            var item = uploads.queue[length-1];
             item.formData.push($scope.docs);
             uploads.uploadItem(item);
             console.log($scope.docs);
@@ -265,17 +267,23 @@
                     upCtrl.uploadSuccess = true;
                     upCtrl.docID = res.DOC_ID;
                     $scope.docs = {};
+                    $scope.uploader = new FileUploader({url: "http://localhost:3000/api/v1/documents/", headers: {token: token} });
                 }
             };
         };
 
         this.uploadPreview = function(){
-            var preview=upCtrl.previewUploader.queue[0];
+            var length = previewer.queue.length;
+            var preview = previewer.queue[length-1];
+            console.log(length,preview,$scope.previewUploader);
             preview.url = "http://localhost:3000/api/v1/documents/"+upCtrl.docID;
-            upCtrl.previewUploader.uploadAll();
-            upCtrl.previewUploader.onSuccessItem = function(){
-                alert("Preview uploaded successfully");
-                upCtrl.uploadSuccess = false;
+            previewer.uploadItem(preview);
+            previewer.onSuccessItem = function(item, res, status, headers){
+                if(item.isSuccess) {
+                    alert("Preview uploaded successfully");
+                    $scope.previewUploader = new FileUploader({url: "http://localhost:3000/api/v1/documents/", headers: {token: token}});
+                    upCtrl.uploadSuccess = false;
+                }
             };
         };
 
@@ -283,8 +291,6 @@
             upCtrl.uploadSuccess = false;
         }
     }]);
-
-
 
     app.directive("history", function(){
         return{
