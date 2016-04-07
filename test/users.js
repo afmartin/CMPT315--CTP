@@ -499,7 +499,7 @@ suite('Users', function() {
             });
         });
     });
-
+/*
     test('Can update your account', function(done) {
         rest.post(base_url + '/', {
             data: {
@@ -537,6 +537,7 @@ suite('Users', function() {
             });
         });
     });
+    */
     test('Cannot update another person\'s account', function(done) {
          rest.post(base_url + '/', {
                 data: {

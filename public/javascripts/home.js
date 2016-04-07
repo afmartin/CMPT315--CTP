@@ -37,7 +37,7 @@
                 docs.moreInfo = res.data;
                 docs.moreInfo.display = true;
             }, function(res){
-                alert(JSON.stringify(res.data.statusCode + " " + res.data.message));
+                alert("Need to be logged in to view");
                 docs.back();
             });
         };
