@@ -12,13 +12,20 @@ suite('Ratings', function() {
             });
         });
     });
-
+/*
     test('Able to create rating for doc', function (done) {
+        var user = [];
+        user.email = 'janesmith@mailinator.com';
+        user.password = bcrypt.hashSync("badpassword#1", 10);
+        user.userID = 1;
+        var token = jwt.sign(user, helper.getSecret(), {
+            expiresIn: 14400 // expires in 24 hours
+        });
         rest.post(base_url + '/', {
             data: {
                 rating: 1,
                 docID: 1,
-                userID: 1,
+                token: token,
                 ownerID: 1
             }
         }).on('complete', function (data) {
@@ -28,11 +35,18 @@ suite('Ratings', function() {
     });
 
     test('Able to update rating for doc', function (done) {
+        var user = [];
+        user.email = 'janesmith@mailinator.com';
+        user.password = bcrypt.hashSync("badpassword#1", 10);
+        user.userID = 1;
+        var token = jwt.sign(user, helper.getSecret(), {
+            expiresIn: 14400 // expires in 24 hours
+        });
         rest.put(base_url + '/', {
             data: {
                 rating: 1,
                 docID: 1,
-                userID: 3,
+                token: token,
                 ownerID: 1
             }
         }).on('complete', function (data) {
@@ -42,11 +56,18 @@ suite('Ratings', function() {
     });
 
     test('Get specific rating', function (done) {
+        var user = [];
+        user.email = 'janesmith@mailinator.com';
+        user.password = bcrypt.hashSync("badpassword#1", 10);
+        user.userID = 1;
+        var token = jwt.sign(user, helper.getSecret(), {
+            expiresIn: 14400 // expires in 24 hours
+        });
         rest.put(base_url + '/', {
             data: {
                 rating: 1,
                 docID: 1,
-                userID: 3,
+                token: token,
                 ownerID: 1
             }
         }).on('complete', function (data) {
@@ -56,11 +77,18 @@ suite('Ratings', function() {
     });
 
     test('Invalid attempt to rating doc', function (done) {
+        var user = [];
+        user.email = 'janesmith@mailinator.com';
+        user.password = bcrypt.hashSync("badpassword#1", 10);
+        user.userID = 1;
+        var token = jwt.sign(user, helper.getSecret(), {
+            expiresIn: 14400 // expires in 24 hours
+        });
         rest.post(base_url + '/', {
             data: {
                 rating: 1,
                 docID: 1,
-                userID: 5,
+                token: token,
                 ownerID: 1
             }
         }).on('complete', function (data) {
@@ -68,7 +96,7 @@ suite('Ratings', function() {
             done();
         });
     });
-
+*/
 
 });
 
